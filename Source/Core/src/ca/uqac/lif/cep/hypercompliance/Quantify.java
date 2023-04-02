@@ -97,12 +97,12 @@ public class Quantify extends SynchronousProcessor
 	protected boolean compute(Object[] inputs, Queue<Object[]> outputs)
 	{
 		Object event = inputs[0];
-		m_inputLog.add(event);
 		Object[] f_out = new Object[1];
 		m_identifier.evaluate(inputs, f_out);
 		Object trace_id = f_out[0];
 		m_root.push(trace_id, event);
 		Troolean.Value verdict = m_root.getVerdict();
+		m_inputLog.add(event);
 		outputs.add(new Object[] {verdict});
 		return true;
 	}
@@ -361,6 +361,8 @@ public class Quantify extends SynchronousProcessor
 		/*@ non_null @*/ protected final Processor m_phiInstance;
 
 		/*@ non_null @*/ protected final QueueSink m_sink;
+		
+		/*@ null @*/ protected Troolean.Value m_verdict;
 
 		LeafNode(int level)
 		{
@@ -373,6 +375,7 @@ public class Quantify extends SynchronousProcessor
 			}
 			m_sink = new QueueSink();
 			Connector.connect(m_phiInstance, m_sink);
+			m_verdict = null;
 		}
 
 		@Override
@@ -387,7 +390,12 @@ public class Quantify extends SynchronousProcessor
 		@Override
 		public Value getVerdict()
 		{
-			return (Value) m_sink.getQueue().remove();
+			Queue<?> q = m_sink.getQueue();
+			if (!q.isEmpty())
+			{
+				m_verdict = (Value) q.remove();
+			}
+			return m_verdict;
 		}
 	}
 }

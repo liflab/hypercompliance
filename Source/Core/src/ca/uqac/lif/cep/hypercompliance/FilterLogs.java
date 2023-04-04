@@ -33,17 +33,32 @@ import ca.uqac.lif.cep.tmf.SinkLast;
 /**
  * A processor that releases log update events from traces in a log only for
  * traces that satisfy a given Troolean property.
+ * <p>
+ * The processor evaluating the condition can perform an arbitrary calculation.
+ * The only condition is that it returns a stream of values of type
+ * {@link Troolean.Value}, and that its output be <em>monotonic</em>: if it
+ * returns {@code TRUE} at some point, it must then return {@code TRUE} forever
+ * (and the same for {@code FALSE}).
  * 
  * @author Sylvain Hallé
- *
  */
 public class FilterLogs extends SynchronousProcessor
 {
-  protected final Processor m_condition;
+  /**
+   * The processor evaluating the condition on each trace.
+   */
+  /*@ non_null @*/ protected final Processor m_condition;
 
-  protected final Map<Object,PushUnit> m_units;
+  /**
+   * A map associating trace IDs to their corresponding {@link PushUnit}.
+   */
+  /*@ non_null @*/ protected final Map<Object,PushUnit> m_units;
 
-  public FilterLogs(Processor condition)
+  /**
+   * Creates a new instance of the processor.
+   * @param condition The processor evaluating the condition on each trace
+   */
+  public FilterLogs(/*@ non_null @*/ Processor condition)
   {
     super(1, 1);
     m_condition = condition;
@@ -77,18 +92,44 @@ public class FilterLogs extends SynchronousProcessor
     throw new UnsupportedOperationException("This processor cannot be duplicated");
   }
 
+  /**
+   * The encapsulation of a processor connected to a sink. In addition, the
+   * class controls what events pushed to the processor are allowed to be
+   * released, by looking at the Troolean verdict produced by the processor
+   * (see {@link #push(LogUpdate)}).
+   */
   protected class PushUnit
   {
-    protected final Processor m_processor;
+    /**
+     * The processor to which events are pushed.
+     */
+    /*@ non_null @*/ protected final Processor m_processor;
 
-    protected final Pushable m_pushable;
+    /**
+     * The pushable object to push events to this processor.
+     */
+    /*@ non_null @*/ protected final Pushable m_pushable;
 
-    protected final SinkLast m_sink;
+    /**
+     * The sink that collects events pushed to the processor.
+     */
+    /*@ non_null @*/ protected final SinkLast m_sink;
 
-    protected final List<Object> m_retained;
+    /**
+     * The list of events pushed to this processor and that have not been
+     * released yet.
+     */
+    /*@ non_null @*/ protected final List<Object> m_retained;
 
-    protected Troolean.Value m_verdict;
+    /**
+     * A flag indicating if the events pushed to this processor are allowed to
+     * be let through.
+     */
+    /*@ non_null @*/ protected Troolean.Value m_verdict;
 
+    /**
+     * Creates a new push unit.
+     */
     public PushUnit()
     {
       super();
@@ -100,6 +141,22 @@ public class FilterLogs extends SynchronousProcessor
       m_verdict = Troolean.Value.INCONCLUSIVE;
     }
 
+    /**
+     * Pushes a {@link LogUpdate} event to this push unit. This pushes the
+     * event to the underlying processor, after which the verdict produced by
+     * the processor is queried.
+     * <ul>
+     * <li>If the verdict is {@code INCONCLUSIVE}, the event is added to the
+     * "retained" list and nothing else happens.</li>
+     * <li>If the verdict is {@code TRUE}, the list of retained events is
+     * let through, followed by the newly pushed event. Then the list of
+     * retained events is cleared.</li>
+     * <li>If the verdict is {@code FALSE}, no event is output.</li>
+     * </ul>
+     * @param u The log update event to push
+     * @return A list of events that are allowed to be let through by the
+     * encasing {@link FilterLogs} processor.
+     */
     /*@ null @*/ public List<Object> push(LogUpdate u)
     {
       if (m_verdict == Troolean.Value.FALSE)

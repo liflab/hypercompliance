@@ -25,6 +25,12 @@ import java.util.Map;
 import ca.uqac.lif.cep.tmf.QueueSource;
 import ca.uqac.lif.cep.tuples.Tuple;
 
+/**
+ * A source of {@link LogUpdate} events obtained from a {@link Log} by
+ * outputting the events in the order defined by their timestamp.
+ * 
+ * @author Sylvain Hallé
+ */
 public class InterleavedSource extends QueueSource
 {
   /**
@@ -58,9 +64,20 @@ public class InterleavedSource extends QueueSource
     m_events.addAll(updates);
   }
   
+  /**
+   * A {@link LogUpdate} that implements the {@link Comparable} interface by
+   * referring to the timestamp attribute of the event they contain. This
+   * allows these updates to be put in a list and then sorted according to
+   * the timestamp of the contained event.
+   */
   public class ComparableLogUpdate extends LogUpdate implements Comparable<ComparableLogUpdate>
   {
-    public ComparableLogUpdate(Object id, Object event)
+    /**
+     * Produces a comparable log update for a trace ID.
+     * @param id The trace ID
+     * @param event The tuple event to append to that trace
+     */
+    public ComparableLogUpdate(Object id, Tuple event)
     {
       super(id, event);
     }

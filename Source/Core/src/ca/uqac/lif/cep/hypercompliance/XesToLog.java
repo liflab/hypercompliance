@@ -38,12 +38,31 @@ import org.deckfour.xes.model.impl.XAttributeTimestampImpl;
 import ca.uqac.lif.cep.tuples.Tuple;
 import ca.uqac.lif.cep.tuples.TupleMap;
 
+/**
+ * Reads a document in the <a href="https://xes-standard.org/">XES format</a>
+ * and converts it into a {@link Log} object whose events are name-value
+ * {@link Tuple}s.
+ * 
+ * @author Sylvain Hallé
+ */
 public class XesToLog
 {
+  /**
+   * The parser used to read the XML document.
+   */
   protected final XesXmlParser m_parser;
   
+  /**
+   * The name of the attribute in each trace that corresponds to the case
+   * identifier.
+   */
   protected final String m_caseId;
   
+  /**
+   * Creates a new instance of the transformer.
+   * @param case_id The name of the attribute in each trace that corresponds
+   * to the case identifier
+   */
   public XesToLog(String case_id)
   {
     super();
@@ -51,7 +70,13 @@ public class XesToLog
     m_caseId = case_id;
   }
   
-  public Log getLog(InputStream is)
+  /**
+   * Gets the log instance obtained from reading an XES document.
+   * @param is An input stream open at the start of an XES file
+   * @return The log instance, or {@code null} if no log could be read from the
+   * file.
+   */
+  /*@ null @*/ public Log getLog(/*@ non_null @*/ InputStream is)
   {
     XLog xlog = null;
     try
@@ -61,8 +86,7 @@ public class XesToLog
     }
     catch (Exception e)
     {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      return null;
     }
     Log log = new Log();
     for (XTrace xtrace : xlog)
@@ -77,6 +101,11 @@ public class XesToLog
     return log;
   }
   
+  /**
+   * Turns an XES event into a {@link Tuple}.
+   * @param e The event
+   * @return The tuple
+   */
   protected static Tuple eventToTuple(XEvent e)
   {
     XAttributeMap attr_map = e.getAttributes();
@@ -88,6 +117,11 @@ public class XesToLog
     return tuple;
   }
   
+  /**
+   * Casts a value extracted from the XES parser into its primitive Java type.
+   * @param o The extracted value
+   * @return The cast value
+   */
   protected static Object castValue(XAttributeImpl o)
   {
     if (o instanceof XAttributeDiscreteImpl)
@@ -116,35 +150,5 @@ public class XesToLog
       return ((XAttributeTimestampImpl) o).getValueMillis();
     }
     return null;
-  }
-  
-  /**
-   * Adds an XES string attribute to a tuple map.
-   * @param tuple The tuple where the attribute must be added
-   * @param attribute The XES attribute to read data from
-   */
-  protected static void addStringAttribute(TupleMap tuple, XAttribute attribute)
-  {
-    System.out.println(attribute);
-  }
-  
-  /**
-   * Adds an XES numerical attribute to a tuple map.
-   * @param tuple The tuple where the attribute must be added
-   * @param attribute The XES attribute to read data from
-   */
-  protected static void addNumericalAttribute(TupleMap tuple, XAttribute attribute)
-  {
-    
-  }
-  
-  /**
-   * Adds an XES date/time attribute to a tuple map.
-   * @param tuple The tuple where the attribute must be added
-   * @param attribute The XES attribute to read data from
-   */
-  protected static void addDateAttribute(TupleMap tuple, XAttribute attribute)
-  {
-    
   }
 }

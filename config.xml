@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Configuration file for AntRun.
+  
+  Use this file to override the default properties contained
+  in build.xml. For example, to override the build.jar.filename
+  property (which sets the name of the compiled jar file), add
+  an element
+  
+  <jar>
+    <filename>foo</filename>
+  </jar>
+  
+  inside the <build> element.
+  
+  **Caveat emptor:** in some cases, changing this file and running ant
+  again will result in Ant using a cached version of the old file! Run
+  "ant dummy" to make sure that the correct data is being read. Otherwise
+  you might need to run "ant clean" and start over.
+-->
+<build>
+  <!-- Uncomment any of these if you want to override the build
+       script's default values -->
+
+  <!-- The project's name -->
+  <name>BeepBeep Hypercompliance Palette</name>
+  
+  <!-- The project's author. Currently this only
+  shows up in the footer of the Javadoc documentation. -->
+  <author>Sylvain Hallé</author>
+  
+  <!-- The project's main class -->
+  <!-- <mainclass>my.package.MainClass</mainclass> -->
+  
+  <!-- The target JDK for which we are compiling -->
+  <targetjdk>8</targetjdk>
+  
+  <jar>
+    <filename>hypercompliance</filename>
+  </jar>
+  
+  <test>
+    <srcdir>Source/Core/srctest</srcdir>
+    <bindir>Source/Core/bintest</bindir>
+    <!-- The filename pattern to recognize test files -->
+    <!-- <filenamepattern>
+           <src>**/*Test.java</src>
+           <bin>**/*Test.class</bin>
+         </filenamepattern> -->
+  </test>
+  
+  <!--
+    Write JAR dependencies here.
+  -->
+  <dependencies>
+    <dependency>
+      <!-- Guava is required by OpenXES -->
+      <name>Google Guava</name>
+      <classname>com.google.common.collect.Interner</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar</jar>
+        <jar>https://repo1.maven.org/maven2/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <!-- OpenXES is required to parse XES logs -->
+      <name>OpenXES</name>
+      <classname>org.deckfour.xes.in.XesXmlParser</classname>
+      <files>
+        <jar>https://svn.win.tue.nl/trac/prom/export/latest/Releases/OpenXES/OpenXES-20211004.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>BeepBeep LTL palette</name>
+      <classname>ca.uqac.lif.cep.ltl.Troolean</classname>
+      <files>
+        <jar>https://github.com/liflab/beepbeep-3-palettes/releases/download/v0.5/ltl-0.5.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>BeepBeep Tuple palette</name>
+      <classname>ca.uqac.lif.cep.tuples.Tuple</classname>
+      <files>
+        <jar>https://github.com/liflab/beepbeep-3-palettes/releases/download/v0.5/tuples-0.5.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+  </dependencies>
+</build>

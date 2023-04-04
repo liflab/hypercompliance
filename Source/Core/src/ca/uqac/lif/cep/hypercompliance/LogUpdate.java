@@ -126,4 +126,10 @@ public class LogUpdate implements AbstractLog
   {
     return false;
   }
+  
+  @Override
+  public String toString()
+  {
+    return "{" + m_id + "\u21a6" + m_event + "}";
+  }
 }

@@ -27,7 +27,6 @@ import ca.uqac.lif.cep.Connector;
 import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.Pushable;
 import ca.uqac.lif.cep.UniformProcessor;
-import ca.uqac.lif.cep.functions.UnaryFunction;
 import ca.uqac.lif.cep.hypercompliance.Quantify.QuantifierType;
 import ca.uqac.lif.cep.ltl.Troolean;
 import ca.uqac.lif.cep.tmf.QueueSink;
@@ -40,74 +39,21 @@ public class QuantifyTest
 	@Test
 	public void test1()
 	{
-		Quantify q = new Quantify(new PositivePayload(), IdFunction.instance, QuantifierType.ALL);
+		Quantify q = new Quantify(new PositivePayload(), QuantifierType.ALL);
 		QueueSink sink = new QueueSink();
 		Queue<?> queue = sink.getQueue();
 		Connector.connect(q, sink);
 		Pushable p = q.getPushableInput();
-		p.push(new DummyEvent(0, 1));
+		p.push(new LogUpdate(0, 1));
 		assertFalse(queue.isEmpty());
 		assertEquals(Troolean.Value.TRUE, queue.remove());
-		p.push(new DummyEvent(1, 1));
+		p.push(new LogUpdate(1, 1));
 		assertFalse(queue.isEmpty());
 		assertEquals(Troolean.Value.TRUE, queue.remove());
-		p.push(new DummyEvent(0, 0));
+		p.push(new LogUpdate(0, 0));
 		assertFalse(queue.isEmpty());
 		assertEquals(Troolean.Value.FALSE, queue.remove());
 		
-	}
-	
-	/**
-	 * A dummy event made of a trace ID and an arbitrary payload.
-	 * Used for testing.
-	 */
-	public static class DummyEvent
-	{
-		protected final int m_id;
-		
-		protected final Object m_payload;
-		
-		public DummyEvent(int id, Object payload)
-		{
-			super();
-			m_id = id;
-			m_payload = payload;
-		}
-		
-		public int getId()
-		{
-			return m_id;
-		}
-		
-		public Object getPayload()
-		{
-			return m_payload;
-		}
-		
-		@Override
-		public String toString()
-		{
-			return "(" + m_id + "," + m_payload + ")";
-		}
-	}
-	
-	/**
-	 * A function extracting the ID from a dummy event.
-	 */
-	public static class IdFunction extends UnaryFunction<DummyEvent,Integer>
-	{
-		public static final IdFunction instance = new IdFunction();
-		
-		protected IdFunction()
-		{
-			super(DummyEvent.class, Integer.class);
-		}
-
-		@Override
-		public Integer getValue(DummyEvent x)
-		{
-			return x.getId();
-		}
 	}
 	
 	public static class PositivePayload extends UniformProcessor
@@ -120,8 +66,8 @@ public class QuantifyTest
 		@Override
 		protected boolean compute(Object[] inputs, Object[] outputs)
 		{
-			DummyEvent e = (DummyEvent) inputs[0];
-			outputs[0] = Troolean.trooleanValue(((Number) e.getPayload()).intValue() > 0);
+			Integer i = (Integer) inputs[0];
+			outputs[0] = Troolean.trooleanValue(i > 0);
 			return true;
 		}
 

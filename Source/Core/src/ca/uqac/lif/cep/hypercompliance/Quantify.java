@@ -27,7 +27,6 @@ import ca.uqac.lif.cep.Connector;
 import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.Pushable;
 import ca.uqac.lif.cep.SynchronousProcessor;
-import ca.uqac.lif.cep.functions.UnaryFunction;
 import ca.uqac.lif.cep.ltl.Troolean;
 import ca.uqac.lif.cep.ltl.Troolean.Value;
 import ca.uqac.lif.cep.tmf.QueueSink;
@@ -36,17 +35,12 @@ public class Quantify extends SynchronousProcessor
 {
 	/*@ non_null @*/ protected final QuantifierType[] m_quantifiers;
 
-	/*@ non_null @*/ protected final List<Object> m_inputLog;
+	/*@ non_null @*/ protected final List<LogUpdate> m_inputLog;
 
 	/**
 	 * The processor to evaluate on n-uplets of traces.
 	 */
 	/*@ non_null @*/ protected final Processor m_phi;
-
-	/**
-	 * The function used to extract a trace identifier out of each event.
-	 */
-	/*@ non_null @*/ protected final UnaryFunction<?,?> m_identifier;
 
 	/**
 	 * The root node of the quantifier node structure.
@@ -63,13 +57,12 @@ public class Quantify extends SynchronousProcessor
 	 */
 	/*@ non_null @*/ public static enum QuantifierType {ALL, SOME}
 
-	public Quantify(/*@ non_null @*/ Processor phi, UnaryFunction<?,?> identifier, /*@ non_null @*/ QuantifierType ... quantifiers)
+	public Quantify(/*@ non_null @*/ Processor phi, /*@ non_null @*/ QuantifierType ... quantifiers)
 	{
 		super(1, 1);
 		m_quantifiers = quantifiers;
 		m_phi = phi;
-		m_identifier = identifier;
-		m_inputLog = new ArrayList<Object>();
+		m_inputLog = new ArrayList<LogUpdate>();
 		if (m_quantifiers[0] == QuantifierType.ALL)
 		{
 			m_root = new UniversalNode(0);
@@ -79,30 +72,14 @@ public class Quantify extends SynchronousProcessor
 			m_root = new ExistentialNode(0);
 		}
 	}
-	
-	/**
-	 * Gets the trace identifier associated to an event of the log.
-	 * @param event The event
-	 * @return The trace identifier
-	 */
-	/*@ non_null @*/ protected Object getIdentifier(/*@ non_null @*/ Object event)
-	{
-		Object[] f_out = new Object[1];
-		m_identifier.evaluate(new Object[] {event}, f_out);
-		Object trace_id = f_out[0];
-		return trace_id;
-	}
 
 	@Override
 	protected boolean compute(Object[] inputs, Queue<Object[]> outputs)
 	{
-		Object event = inputs[0];
-		Object[] f_out = new Object[1];
-		m_identifier.evaluate(inputs, f_out);
-		Object trace_id = f_out[0];
-		m_root.push(trace_id, event);
+		LogUpdate upd = (LogUpdate) inputs[0];
+		m_root.push(upd);
 		Troolean.Value verdict = m_root.getVerdict();
-		m_inputLog.add(event);
+		m_inputLog.add(upd);
 		outputs.add(new Object[] {verdict});
 		return true;
 	}
@@ -163,25 +140,25 @@ public class Quantify extends SynchronousProcessor
 
 		/**
 		 * Pushes a new event into the quantifier structure.
-		 * @param trace_id The identifier of the trace the event belongs to
-		 * @param event The event
+		 * @param u The log update event
 		 */
-		public final void push(Object trace_id, Object event)
+		public final void push(LogUpdate u)
 		{
-			push(trace_id, event, new HashSet<Integer>());
+			push(u, new HashSet<Integer>());
 		}
 
-		protected void push(Object trace_id, Object event, Set<Integer> positions)
+		protected void push(LogUpdate u, Set<Integer> positions)
 		{
+		  Object trace_id = u.getId();
 			if (!m_seenIdentifiers.contains(trace_id))
 			{
 				// First spawn a copy of the sub-tree and append it as a new child
 				QuantifierNode new_child = copy(m_level + 1, trace_id);
 				m_children.add(new QuantifierEdge(trace_id, new_child));
 				// Push all history into this new sub-tree
-				for (Object e : m_inputLog)
+				for (LogUpdate e : m_inputLog)
 				{
-					new_child.push(getIdentifier(e), e);
+					new_child.push(e);
 				}
 			}
 			// Then push new event into all children
@@ -192,12 +169,12 @@ public class Quantify extends SynchronousProcessor
 					Set<Integer> new_positions = new HashSet<Integer>();
 					new_positions.addAll(positions);
 					new_positions.add(m_level);
-					e.m_destination.push(trace_id, event, new_positions);
+					e.m_destination.push(u, new_positions);
 				}
 				else
 				{
 					// Don't bother creating a new set if we don't add anything
-					e.m_destination.push(trace_id, event, positions);
+					e.m_destination.push(u, positions);
 				}
 			}
 		}
@@ -379,11 +356,11 @@ public class Quantify extends SynchronousProcessor
 		}
 
 		@Override
-		protected void push(Object trace_id, Object event, Set<Integer> positions)
+		protected void push(LogUpdate event, Set<Integer> positions)
 		{
 			for (int i : positions)
 			{
-				m_pushables[i].push(event);
+				m_pushables[i].push(event.getEvent());
 			}
 		}
 

@@ -59,7 +59,7 @@ public class QuantifyTest
 	@Test
 	public void test2()
 	{
-		Quantify q = new Quantify(new SameModulo(), IdFunction.instance, QuantifierType.ALL, QuantifierType.ALL);
+		Quantify q = new Quantify(new SameModulo(), QuantifierType.ALL, QuantifierType.ALL);
 		QueueSink sink = new QueueSink();
 		Queue<?> queue = sink.getQueue();
 		Connector.connect(q, sink);
@@ -98,8 +98,6 @@ public class QuantifyTest
 		{
 			return new PositivePayload();
 		}
-		
-		
 	}
 	
 	public static class SameModulo extends UniformProcessor
@@ -112,11 +110,10 @@ public class QuantifyTest
 		@Override
 		protected boolean compute(Object[] inputs, Object[] outputs)
 		{
-			LogUpdate e1 = (LogUpdate) inputs[0];
-			LogUpdate e2 = (LogUpdate) inputs[1];
-			int mod1 = ((Number) e1.getPayload()).intValue() % 2;
-			int mod2 = ((Number) e2.getPayload()).intValue() % 2;
-			System.out.println(e1 + "," + e2);
+			Integer i1 = (Integer) inputs[0];
+			Integer i2 = (Integer) inputs[1];
+			int mod1 = i1 % 2;
+			int mod2 = i2 % 2;
 			outputs[0] = Troolean.trooleanValue(mod1 == mod2);
 			return true;
 		}
@@ -126,7 +123,5 @@ public class QuantifyTest
 		{
 			return new SameModulo();
 		}
-		
-		
 	}
 }

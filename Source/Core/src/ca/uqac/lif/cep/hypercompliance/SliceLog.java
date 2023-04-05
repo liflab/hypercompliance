@@ -112,8 +112,13 @@ public class SliceLog extends SynchronousProcessor
 				out_map.put(k, spu.getLast());
 			}
 		}
-		outputs.add(new Object[] {out_map});
+		outputs.add(new Object[] {processMap(out_map)});
 		return true;
+	}
+	
+	protected Object processMap(TreeMap<Object,Object> map)
+	{
+		return map;
 	}
 	
 	/**

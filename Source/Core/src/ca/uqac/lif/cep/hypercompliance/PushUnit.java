@@ -63,6 +63,15 @@ class PushUnit implements Duplicable
   }
   
   /**
+   * Resets the state of the internal processor and its attached sink.
+   */
+  public void reset()
+  {
+  	m_processor.reset();
+  	m_sink.reset();
+  }
+  
+  /**
    * Pushes an event into the push unit, or notifies the processor that the
    * input trace is over.
    * @param o An event, or {@code null} to indicate that no further event will

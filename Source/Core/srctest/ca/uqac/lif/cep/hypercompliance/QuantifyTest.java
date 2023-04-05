@@ -56,6 +56,28 @@ public class QuantifyTest
 		
 	}
 	
+	@Test
+	public void test2()
+	{
+		Quantify q = new Quantify(new SameModulo(), IdFunction.instance, QuantifierType.ALL, QuantifierType.ALL);
+		QueueSink sink = new QueueSink();
+		Queue<?> queue = sink.getQueue();
+		Connector.connect(q, sink);
+		Pushable p = q.getPushableInput();
+		p.push(new LogUpdate(0, 1));
+		assertFalse(queue.isEmpty());
+		assertEquals(Troolean.Value.TRUE, queue.remove());
+		p.push(new LogUpdate(1, 11));
+		assertFalse(queue.isEmpty());
+		assertEquals(Troolean.Value.TRUE, queue.remove());
+		p.push(new LogUpdate(1, 12));
+		assertFalse(queue.isEmpty());
+		assertEquals(Troolean.Value.TRUE, queue.remove());
+		p.push(new LogUpdate(0, 3));
+		assertFalse(queue.isEmpty());
+		assertEquals(Troolean.Value.FALSE, queue.remove());
+	}
+	
 	public static class PositivePayload extends UniformProcessor
 	{
 		public PositivePayload()
@@ -75,6 +97,34 @@ public class QuantifyTest
 		public Processor duplicate(boolean with_state)
 		{
 			return new PositivePayload();
+		}
+		
+		
+	}
+	
+	public static class SameModulo extends UniformProcessor
+	{
+		public SameModulo()
+		{
+			super(2, 1);
+		}
+
+		@Override
+		protected boolean compute(Object[] inputs, Object[] outputs)
+		{
+			LogUpdate e1 = (LogUpdate) inputs[0];
+			LogUpdate e2 = (LogUpdate) inputs[1];
+			int mod1 = ((Number) e1.getPayload()).intValue() % 2;
+			int mod2 = ((Number) e2.getPayload()).intValue() % 2;
+			System.out.println(e1 + "," + e2);
+			outputs[0] = Troolean.trooleanValue(mod1 == mod2);
+			return true;
+		}
+
+		@Override
+		public Processor duplicate(boolean with_state)
+		{
+			return new SameModulo();
 		}
 		
 		

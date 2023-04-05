@@ -160,6 +160,7 @@ public class Quantify extends SynchronousProcessor
 				{
 					new_child.push(e);
 				}
+				m_seenIdentifiers.add(trace_id);
 			}
 			// Then push new event into all children
 			for (QuantifierEdge e : m_children)
@@ -195,11 +196,11 @@ public class Quantify extends SynchronousProcessor
 			QuantifierNode new_child = null;
 			if (qt == QuantifierType.ALL)
 			{
-				new_child = new UniversalNode(m_level);
+				new_child = new UniversalNode(level);
 			}
 			else
 			{
-				new_child = new ExistentialNode(m_level);
+				new_child = new ExistentialNode(level);
 			}
 			for (Object id : m_seenIdentifiers)
 			{

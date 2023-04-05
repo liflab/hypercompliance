@@ -23,12 +23,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.TreeMap;
 
-import ca.uqac.lif.cep.Connector;
 import ca.uqac.lif.cep.Processor;
-import ca.uqac.lif.cep.Pushable;
 import ca.uqac.lif.cep.SynchronousProcessor;
 import ca.uqac.lif.cep.ltl.Troolean;
-import ca.uqac.lif.cep.tmf.SinkLast;
 
 /**
  * A processor that releases log update events from traces in a log only for
@@ -50,9 +47,9 @@ public class FilterLogs extends SynchronousProcessor
   /*@ non_null @*/ protected final Processor m_condition;
 
   /**
-   * A map associating trace IDs to their corresponding {@link PushUnit}.
+   * A map associating trace IDs to their corresponding {@link FilterPushUnit}.
    */
-  /*@ non_null @*/ protected final Map<Object,PushUnit> m_units;
+  /*@ non_null @*/ protected final Map<Object,FilterPushUnit> m_units;
 
   /**
    * Creates a new instance of the processor.
@@ -62,7 +59,7 @@ public class FilterLogs extends SynchronousProcessor
   {
     super(1, 1);
     m_condition = condition;
-    m_units = new TreeMap<Object,PushUnit>();
+    m_units = new TreeMap<Object,FilterPushUnit>();
   }
 
   @Override
@@ -72,9 +69,9 @@ public class FilterLogs extends SynchronousProcessor
     Object id = upd.getId();
     if (!m_units.containsKey(id))
     {
-      m_units.put(id, new PushUnit());
+      m_units.put(id, new FilterPushUnit(m_condition.duplicate()));
     }
-    PushUnit pu = m_units.get(id);
+    FilterPushUnit pu = m_units.get(id);
     List<Object> out = pu.push(upd);
     if (out != null)
     {
@@ -98,22 +95,8 @@ public class FilterLogs extends SynchronousProcessor
    * released, by looking at the Troolean verdict produced by the processor
    * (see {@link #push(LogUpdate)}).
    */
-  protected class PushUnit
+  protected class FilterPushUnit extends PushUnit
   {
-    /**
-     * The processor to which events are pushed.
-     */
-    /*@ non_null @*/ protected final Processor m_processor;
-
-    /**
-     * The pushable object to push events to this processor.
-     */
-    /*@ non_null @*/ protected final Pushable m_pushable;
-
-    /**
-     * The sink that collects events pushed to the processor.
-     */
-    /*@ non_null @*/ protected final SinkLast m_sink;
 
     /**
      * The list of events pushed to this processor and that have not been
@@ -130,13 +113,9 @@ public class FilterLogs extends SynchronousProcessor
     /**
      * Creates a new push unit.
      */
-    public PushUnit()
+    public FilterPushUnit(Processor p)
     {
-      super();
-      m_processor = m_condition.duplicate();
-      m_pushable = m_processor.getPushableInput();
-      m_sink = new SinkLast();
-      Connector.connect(m_processor, m_sink);
+      super(p);
       m_retained = new ArrayList<Object>();
       m_verdict = Troolean.Value.INCONCLUSIVE;
     }
@@ -164,11 +143,11 @@ public class FilterLogs extends SynchronousProcessor
         // Don't bother
         return null;
       }
-      m_pushable.push(u.getEvent());
+      super.push(u);
       List<Object> to_output = new ArrayList<Object>();
       if (m_verdict == Troolean.Value.INCONCLUSIVE)
       {
-        m_verdict = (Troolean.Value) m_sink.getLast()[0];
+        m_verdict = (Troolean.Value) getLast();
         if (m_verdict == Troolean.Value.FALSE)
         {
           m_retained.clear();

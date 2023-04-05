@@ -23,6 +23,11 @@ public class Aggregate extends SliceLog
 		m_unit = apu;
 	}
 	
+	public Aggregate(/*@ non_null @*/ Processor p, /*@ non_null @*/ Choice c, /*@ non_null @*/ Processor aggregator, Object[] default_values)
+	{
+		this(p, c, aggregator, new AggregationPushUnit(aggregator, default_values));
+	}
+	
 	public Aggregate(/*@ non_null @*/ Processor p, /*@ non_null @*/ Choice c, /*@ non_null @*/ Processor aggregator)
 	{
 		this(p, c, aggregator, new AggregationPushUnit(aggregator));
@@ -53,23 +58,30 @@ public class Aggregate extends SliceLog
 	{
 		/*@ non_null @*/ protected final Processor m_aggregator;
 		
-		protected AggregationPushUnit(Processor p, SinkLast sink)
+		/*@ null @*/ protected final Object[] m_defaultValues;
+		
+		protected AggregationPushUnit(Processor p, SinkLast sink, Object[] default_values)
 		{
-			super(getGroup(p), sink);
+			super(getGroup(p, default_values), sink);
 			m_aggregator = p;
+			m_defaultValues = default_values;
+		}
+		
+		protected AggregationPushUnit(Processor p, Object[] default_values)
+		{
+			this(p, new SinkLast(), default_values);
 		}
 		
 		protected AggregationPushUnit(Processor p)
 		{
-			super(getGroup(p), new SinkLast());
-			m_aggregator = p;
+			this(p, null);
 		}
 		
-		protected static GroupProcessor getGroup(Processor p)
+		protected static GroupProcessor getGroup(Processor p, Object[] default_values)
 		{
 			GroupProcessor g = new GroupProcessor(1, 1);
 			ApplyFunction values = new ApplyFunction(Maps.values);
-			RunOn ro = new RunOn(p);
+			RunOn ro = new RunOn(p, default_values);
 			Connector.connect(values, ro);
 			g.associateInput(0, values, 0);
 			g.associateOutput(0, ro, 0);
@@ -80,7 +92,7 @@ public class Aggregate extends SliceLog
 		@Override
 		public AggregationPushUnit duplicate(boolean with_state)
 		{
-			AggregationPushUnit apu = new AggregationPushUnit(m_aggregator, m_sink.duplicate(with_state));
+			AggregationPushUnit apu = new AggregationPushUnit(m_aggregator, m_sink.duplicate(with_state), m_defaultValues);
 			copyInto(apu, with_state);
 			return apu;
 		}

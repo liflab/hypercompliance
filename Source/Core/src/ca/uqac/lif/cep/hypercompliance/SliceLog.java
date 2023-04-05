@@ -146,6 +146,12 @@ public class SliceLog extends SynchronousProcessor
 	public SliceLog duplicate(boolean with_state)
 	{
 		SliceLog s = new SliceLog(m_sliceProcessor);
+		copyInto(s, with_state);
+		return s;
+	}
+	
+	protected void copyInto(SliceLog s, boolean with_state)
+	{
 		if (with_state)
 		{
 			for (Map.Entry<Object,SlicePushUnit> e : m_slices.entrySet())
@@ -153,7 +159,6 @@ public class SliceLog extends SynchronousProcessor
 				s.m_slices.put(e.getKey(), e.getValue().duplicate(with_state));
 			}
 		}
-		return s;
 	}
 
 	/**

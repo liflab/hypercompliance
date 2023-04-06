@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import ca.uqac.lif.cep.tmf.QueueSource;
 import ca.uqac.lif.cep.tuples.Tuple;
 
 /**
@@ -31,7 +30,7 @@ import ca.uqac.lif.cep.tuples.Tuple;
  * 
  * @author Sylvain Hallé
  */
-public class InterleavedSource extends QueueSource
+public class InterleavedSource extends LogSource
 {
   /**
    * The name of the attribute containing the timestamp of each event.
@@ -47,7 +46,7 @@ public class InterleavedSource extends QueueSource
    */
   public InterleavedSource(/*@ non_null @*/ Log log, /*@ non_null @*/ String timestamp)
   {
-    super(1);
+    super();
     m_timestamp = timestamp;
     List<ComparableLogUpdate> updates = new ArrayList<ComparableLogUpdate>();
     for (Map.Entry<Object,List<Object>> e : log.entrySet())

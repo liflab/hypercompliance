@@ -39,7 +39,7 @@ public class QuantifyTest
 	@Test
 	public void test1()
 	{
-		Quantify q = new Quantify(new PositivePayload(), QuantifierType.ALL);
+		Quantify q = new Quantify(new PositivePayload(), false, QuantifierType.ALL);
 		QueueSink sink = new QueueSink();
 		Queue<?> queue = sink.getQueue();
 		Connector.connect(q, sink);
@@ -59,7 +59,7 @@ public class QuantifyTest
 	@Test
 	public void test2()
 	{
-		Quantify q = new Quantify(new SameModulo(), QuantifierType.ALL, QuantifierType.ALL);
+		Quantify q = new Quantify(new SameModulo(), false, QuantifierType.ALL, QuantifierType.ALL);
 		QueueSink sink = new QueueSink();
 		Queue<?> queue = sink.getQueue();
 		Connector.connect(q, sink);

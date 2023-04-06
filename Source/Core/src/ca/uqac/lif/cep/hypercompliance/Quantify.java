@@ -46,6 +46,17 @@ public class Quantify extends SynchronousProcessor
 	 * The root node of the quantifier node structure.
 	 */
 	/*@ non_null @*/ protected final QuantifierNode m_root;
+	
+	/**
+	 * A flag indicating if quantifiers should be evaluated only on completed
+	 * traces.
+	 */
+	protected final boolean m_onlyCompleted;
+	
+	/**
+	 * A flag indicating if successive quantifiers apply to distinct traces.
+	 */
+	protected final boolean m_distinct;
 
 	/**
 	 * An enumerated type used to designate each quantifier in an expression.
@@ -57,12 +68,13 @@ public class Quantify extends SynchronousProcessor
 	 */
 	/*@ non_null @*/ public static enum QuantifierType {ALL, SOME}
 
-	public Quantify(/*@ non_null @*/ Processor phi, /*@ non_null @*/ QuantifierType ... quantifiers)
+	public Quantify(/*@ non_null @*/ Processor phi, boolean completed, /*@ non_null @*/ QuantifierType ... quantifiers)
 	{
 		super(1, 1);
 		m_quantifiers = quantifiers;
 		m_phi = phi;
 		m_inputLog = new ArrayList<LogUpdate>();
+		m_onlyCompleted = completed;
 		if (m_quantifiers[0] == QuantifierType.ALL)
 		{
 			m_root = new UniversalNode(0);
@@ -71,6 +83,7 @@ public class Quantify extends SynchronousProcessor
 		{
 			m_root = new ExistentialNode(0);
 		}
+		m_distinct = true;
 	}
 
 	@Override
@@ -281,6 +294,10 @@ public class Quantify extends SynchronousProcessor
 		@Override
 		public Value getVerdict()
 		{
+			if (m_children.isEmpty())
+			{
+				return null;
+			}
 			boolean all_true = true;
 			for (QuantifierEdge e : m_children)
 			{
@@ -289,7 +306,7 @@ public class Quantify extends SynchronousProcessor
 				{
 					return Value.FALSE;
 				}
-				if (v == Value.INCONCLUSIVE)
+				if (v == null || v == Value.INCONCLUSIVE)
 				{
 					all_true = false;
 				}
@@ -315,6 +332,10 @@ public class Quantify extends SynchronousProcessor
 		@Override
 		public Value getVerdict()
 		{
+			if (m_children.isEmpty())
+			{
+				return null;
+			}
 			boolean all_false = true;
 			for (QuantifierEdge e : m_children)
 			{
@@ -323,7 +344,7 @@ public class Quantify extends SynchronousProcessor
 				{
 					return Value.TRUE;
 				}
-				if (v == Value.INCONCLUSIVE)
+				if (v == null || v == Value.INCONCLUSIVE)
 				{
 					all_false = false;
 				}
@@ -340,6 +361,10 @@ public class Quantify extends SynchronousProcessor
 
 		/*@ non_null @*/ protected final QueueSink m_sink;
 		
+		/*@ non_null @*/ protected final boolean[] m_completed;
+		
+		protected boolean m_allCompleted;
+		
 		/*@ null @*/ protected Troolean.Value m_verdict;
 
 		LeafNode(int level)
@@ -347,10 +372,13 @@ public class Quantify extends SynchronousProcessor
 			super(level);
 			m_phiInstance = Quantify.this.m_phi.duplicate();
 			m_pushables = new Pushable[m_phiInstance.getInputArity()];
+			m_completed = new boolean[m_pushables.length];
 			for (int i = 0; i < m_pushables.length; i++)
 			{
 				m_pushables[i] = m_phiInstance.getPushableInput(i);
+				m_completed[i] = false;
 			}
+			m_allCompleted = false;
 			m_sink = new QueueSink();
 			Connector.connect(m_phiInstance, m_sink);
 			m_verdict = null;
@@ -359,15 +387,44 @@ public class Quantify extends SynchronousProcessor
 		@Override
 		protected void push(LogUpdate event, Set<Integer> positions)
 		{
+			Object o = event.getEvent();
 			for (int i : positions)
 			{
-				m_pushables[i].push(event.getEvent());
+				if (o == null)
+				{
+					m_pushables[i].notifyEndOfTrace();
+					m_completed[i] = true;
+				}
+				else
+				{
+					m_pushables[i].push(o);
+				}
 			}
+			if (o == null)
+			{
+				m_allCompleted = allCompleted();
+			}
+		}
+		
+		protected boolean allCompleted()
+		{
+			for (boolean b : m_completed)
+			{
+				if (!b)
+				{
+					return false;
+				}
+			}
+			return true;
 		}
 
 		@Override
 		public Value getVerdict()
 		{
+			if (m_onlyCompleted && !m_allCompleted)
+			{
+				return null;
+			}
 			Queue<?> q = m_sink.getQueue();
 			if (!q.isEmpty())
 			{

@@ -18,12 +18,9 @@
 package examples;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
-import ca.uqac.lif.cep.Connector;
 import ca.uqac.lif.cep.GroupProcessor;
-import ca.uqac.lif.cep.Pushable;
 import ca.uqac.lif.cep.functions.ApplyFunction;
 import ca.uqac.lif.cep.functions.BinaryFunction;
 import ca.uqac.lif.cep.functions.FunctionTree;
@@ -33,9 +30,10 @@ import ca.uqac.lif.cep.hypercompliance.Log;
 import ca.uqac.lif.cep.hypercompliance.LogSource;
 import ca.uqac.lif.cep.hypercompliance.Quantify;
 import ca.uqac.lif.cep.hypercompliance.Quantify.QuantifierType;
-import ca.uqac.lif.cep.io.Print;
+import ca.uqac.lif.cep.io.Print.Println;
 import ca.uqac.lif.cep.ltl.HardCast;
 import ca.uqac.lif.cep.tmf.Fork;
+import ca.uqac.lif.cep.tmf.KeepLast;
 import ca.uqac.lif.cep.tmf.Pump;
 import ca.uqac.lif.cep.util.Numbers;
 import ca.uqac.lif.cep.util.Sets;
@@ -44,46 +42,70 @@ import static ca.uqac.lif.cep.Connector.connect;
 
 /**
  * Evaluates the hyperpolicy: "for any two traces, the Jaccard index of the
- * sets of events they contain is greater than ½".
+ * sets of events they contain is greater than <i>k</i>" for some constant
+ * <i>k</i> &in; [0,1].
  */
 public class JaccardTraces
 {
 	public static void main(String[] args)
 	{
+		/* The threshold specified in the policy. */
+		float k = 0.5f;
+		
+		/* Create a fake log with a few traces, and add it to a log source. */
 		Log log = new Log();
-		//log.put(0, Arrays.asList("a", "b", "a", "c", "a"));
-		//log.put(1, Arrays.asList("c", "b", "d", "c", "b"));
 		log.put(0, Arrays.asList("a", "b", "c"));
 		log.put(1, Arrays.asList("c", "b", "a"));
-		log.put(2, Arrays.asList("z", "y"));
+		log.put(2, Arrays.asList("a", "z", "c", "y"));
 		LogSource source = new LogSource(log);
+
+		/* Create a group processor that evaluates the Jaccard index of the set of
+		 * events of two *complete* traces. */
 		GroupProcessor jaccard = new GroupProcessor(2, 1);
 		{
 			Sets.PutInto put1 = new Sets.PutInto();
 			Sets.PutInto put2 = new Sets.PutInto();
-			KeepLastEach k = new KeepLastEach(2);
-			connect(put1, 0, k, 0);
-			connect(put2, 0, k, 1);
+			KeepLastEach kl = new KeepLastEach(2);
+			connect(put1, 0, kl, 0);
+			connect(put2, 0, kl, 1);
 			ApplyFunction j = new ApplyFunction(JaccardIndex.instance);
-			connect(k, j);
+			connect(kl, j);
+			jaccard.addProcessors(put1, put2, kl, j)
+				.associateInput(0, put1, 0).associateInput(1, put2, 0)
+				.associateOutput(0, j, 0);
+		}
+
+		/* Create a group processor that evaluates that a value is over a specific
+		 * threshold. */
+		GroupProcessor threshold = new GroupProcessor(1, 1);
+		{
 			Fork f = new Fork();
-			connect(j, f);
 			ApplyFunction gt = new ApplyFunction(new FunctionTree(HardCast.instance, Numbers.isGreaterOrEqual));
 			connect(f, 0, gt, 0);
-			TurnInto fraction = new TurnInto(0.5);
+			TurnInto fraction = new TurnInto(k);
 			connect(f, 1, fraction, 0);
 			connect(fraction, 0, gt, 1);
-			jaccard.associateInput(0, put1, 0);
-			jaccard.associateInput(1, put2, 0);
-			jaccard.associateOutput(0, gt, 0);
-			jaccard.addProcessors(put1, put2, k, j, f, fraction, gt);
+			threshold.addProcessors(f, gt, fraction).associateInput(0, f, 0)
+				.associateOutput(0, gt, 0);
 		}
-		Quantify q = new Quantify(jaccard, true, QuantifierType.ALL, QuantifierType.ALL);
+
+		/* Create the binary condition that links the two groups above. */
+		GroupProcessor condition = new GroupProcessor(2, 1);
+		{
+			connect(jaccard, threshold);
+			condition.addProcessors(jaccard, threshold)
+				.associateInput(0, jaccard, 0).associateInput(1, jaccard, 1)
+				.associateOutput(0, threshold, 0);
+		}
+
+		/* Create the hyperpolicy stipulating that the condition must hold for any
+		 * two pairs of traces in a log. */
+		Quantify policy = new Quantify(condition, true, QuantifierType.ALL, QuantifierType.ALL);
 		Pump p = new Pump();
-		connect(source, p, q, new Print().setPrefix("!"));
-		p.start();
+		connect(source, p, policy, new KeepLast(), new Println());
+		p.run();
 	}
-	
+
 	/**
 	 * Function that calculates the
 	 * <a href="https://en.wikipedia.org/wiki/Jaccard_index">Jaccard index</a> of
@@ -93,7 +115,7 @@ public class JaccardTraces
 	public static class JaccardIndex extends BinaryFunction<Set,Set,Float>
 	{
 		public static final JaccardIndex instance = new JaccardIndex();
-		
+
 		protected JaccardIndex()
 		{
 			super(Set.class, Set.class, Float.class);
@@ -102,7 +124,6 @@ public class JaccardTraces
 		@Override
 		public Float getValue(Set x, Set y)
 		{
-			System.out.println(x + "," + y);
 			float inter = 0, union = 0;
 			for (Object o : x)
 			{

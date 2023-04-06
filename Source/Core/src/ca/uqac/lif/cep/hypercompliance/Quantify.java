@@ -118,7 +118,7 @@ public class Quantify extends SynchronousProcessor
 		/**
 		 * The set of trace identifiers seen so far.
 		 */
-		protected final Set<Object> m_seenIdentifiers;
+		/*@ non_null @*/ protected final Set<Object> m_seenIdentifiers;
 
 		/**
 		 * Creates a new quantifier node.

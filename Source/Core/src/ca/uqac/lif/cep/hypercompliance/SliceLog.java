@@ -109,7 +109,11 @@ public class SliceLog extends SynchronousProcessor
 			SlicePushUnit spu = m_slices.get(k);
 			if (isChosen(spu))
 			{
-				out_map.put(k, spu.getLast());
+				Object last = spu.getLast();
+				if (last != null)
+				{
+					out_map.put(k, spu.getLast());
+				}
 			}
 		}
 		Object o = processMap(out_map);

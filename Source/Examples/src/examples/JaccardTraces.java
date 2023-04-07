@@ -40,9 +40,9 @@ import ca.uqac.lif.cep.util.Sets;
 import static ca.uqac.lif.cep.Connector.connect;
 
 /**
- * Evaluates the hyperpolicy: "for any two traces, the Jaccard index of the
- * sets of events they contain is greater than <i>k</i>" for some constant
- * <i>k</i> &in; [0,1].
+ * Evaluates the hyperpolicy: "for any two <em>distinct</em> traces, the
+ * Jaccard index of the sets of events they contain is greater than <i>k</i>"
+ * for some constant <i>k</i> &in; [0,1].
  */
 public class JaccardTraces
 {

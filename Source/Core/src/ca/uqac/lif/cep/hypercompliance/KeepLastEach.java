@@ -20,7 +20,6 @@ package ca.uqac.lif.cep.hypercompliance;
 import java.util.Iterator;
 import java.util.concurrent.Future;
 
-import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.Pullable;
 import ca.uqac.lif.cep.Pushable;
 
@@ -30,92 +29,17 @@ import ca.uqac.lif.cep.Pushable;
  *   
  * @author Sylvain Hallé
  */
-public class KeepLastEach extends Processor
+public class KeepLastEach extends SemiSynchronousProcessor
 {
-	/**
-	 * An array storing the last input event received so far from each input
-	 * pipe.
-	 */
-	/*@ non_null @*/ protected final Object[] m_lasts;
-	
-	/**
-	 * An array storing the state of each input pipe (i.e. {@link true} meaning
-	 * that the last event of the pipe has been received, and {@link false}
-	 * meaning that further events may come in on this pipe).
-	 */
-	/*@ non_null @*/ protected final boolean[] m_done;
-	
-	/**
-	 * The array of input pushables for this processor.
-	 */
-	/*@ non_null @*/ protected final KeepLastEachPushable m_inputPushables[];
-	
-	/**
-	 * The array of output pullables for this processor.
-	 */
-	/*@ non_null @*/ protected final KeepLastEachPullable m_outputPullables[];
-	
 	/**
 	 * Creates a new instance of the processor with a given input/output arity.
 	 * @param arity The arity
 	 */
 	public KeepLastEach(int arity)
 	{
-		super(arity, arity);
-		m_inputPushables = new KeepLastEachPushable[arity];
-		m_outputPullables = new KeepLastEachPullable[arity];
-		m_lasts = new Object[arity];
-		m_done = new boolean[arity];
-		for (int i = 0; i < arity; i++)
-		{
-			m_done[i] = false;
-		}
-	}
-	
-	/**
-	 * Checks if all input pipes have produced their last event.
-	 * @return {@code true} if this is the case, {@link false} otherwise
-	 */
-	protected boolean allDone()
-	{
-		for (boolean b : m_done)
-		{
-			if (!b)
-			{
-				return false;
-			}
-		}
-		return true;
+		super(arity);
 	}
 
-	@Override
-	public Pushable getPushableInput(int index)
-	{
-		if (index < 0 || index >= m_inputPushables.length)
-		{
-			throw new ArrayIndexOutOfBoundsException("Index " + index + " out of bounds");
-		}
-		if (m_inputPushables[index] == null)
-		{
-			m_inputPushables[index] = new KeepLastEachPushable(index);
-		}
-		return m_inputPushables[index];
-	}
-
-	@Override
-	public Pullable getPullableOutput(int index)
-	{
-		if (index < 0 || index >= m_outputPullables.length)
-		{
-			throw new ArrayIndexOutOfBoundsException("Index " + index + " out of bounds");
-		}
-		if (m_outputPullables[index] == null)
-		{
-			m_outputPullables[index] = new KeepLastEachPullable(index);
-		}
-		return m_outputPullables[index];
-	}
-	
 	/**
 	 * Instructs the processor to push the events of its "last" front downstream,
 	 * and to indicate that the trace is over.
@@ -144,6 +68,18 @@ public class KeepLastEach extends Processor
 		return k;
 	}
 	
+	@Override
+	protected KeepLastEachPushable getNewPushableInput(int index)
+	{
+		return new KeepLastEachPushable(index);
+	}
+
+	@Override
+	protected Pullable getNewPullableOutput(int index)
+	{
+		return new KeepLastEachPullable(index);
+	}
+
 	/**
 	 * The implementation of {@link Pushable} specific to this processor. 
 	 */
@@ -153,7 +89,7 @@ public class KeepLastEach extends Processor
 		 * The index of the input pipe this pushable is linked with.
 		 */
 		protected final int m_index;
-		
+
 		/**
 		 * Creates a new instance of pushable.
 		 * @param index The index of the input pipe this pushable is linked with
@@ -163,7 +99,7 @@ public class KeepLastEach extends Processor
 			super();
 			m_index = index;
 		}
-		
+
 		@Override
 		public Pushable push(Object o)
 		{
@@ -175,7 +111,7 @@ public class KeepLastEach extends Processor
 		public Future<Pushable> pushFast(Object o)
 		{
 			push(o);
-      return Pushable.NULL_FUTURE;
+			return Pushable.NULL_FUTURE;
 		}
 
 		@Override
@@ -200,7 +136,7 @@ public class KeepLastEach extends Processor
 			return m_index;
 		}
 	}
-	
+
 	/**
 	 * The implementation of {@link Pullable} specific to this processor.
 	 * <p>
@@ -213,7 +149,7 @@ public class KeepLastEach extends Processor
 		 * The index of the output pipe this pullable is linked with.
 		 */
 		protected final int m_index;
-		
+
 		/**
 		 * Creates a new instance of pullable.
 		 * @param index The index of the output pipe this pullable is linked with
@@ -223,7 +159,7 @@ public class KeepLastEach extends Processor
 			super();
 			m_index = index;
 		}
-		
+
 		@Override
 		public Object pull()
 		{
@@ -281,7 +217,7 @@ public class KeepLastEach extends Processor
 		public void start()
 		{
 			// TODO
-			
+
 		}
 
 		@Override

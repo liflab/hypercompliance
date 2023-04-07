@@ -109,6 +109,11 @@ public class Quantify extends SynchronousProcessor
 		 * The list of children of this node.
 		 */
 		/*@ non_null @*/ protected final List<QuantifierEdge> m_children;
+		
+		/**
+		 * The edge from the parent of this node to this node.
+		 */
+		/*@ non_null @*/ protected QuantifierEdge m_parentEdge;
 
 		/**
 		 * The nesting level of this quantifier.
@@ -130,6 +135,16 @@ public class Quantify extends SynchronousProcessor
 			m_children = new ArrayList<QuantifierEdge>();
 			m_level = level;
 			m_seenIdentifiers = new HashSet<Object>();
+			m_parentEdge = null;
+		}
+		
+		/**
+		 * Sets the edge that goes from the parent of this node to this node.
+		 * @param e The edge
+		 */
+		public void setParentEdge(QuantifierEdge e)
+		{
+			m_parentEdge = e;
 		}
 
 		/**
@@ -167,7 +182,7 @@ public class Quantify extends SynchronousProcessor
 			{
 				// First spawn a copy of the sub-tree and append it as a new child
 				QuantifierNode new_child = copy(m_level + 1, trace_id);
-				m_children.add(new QuantifierEdge(trace_id, new_child));
+				m_children.add(new QuantifierEdge(this, trace_id, new_child));
 				// Push all history into this new sub-tree
 				for (LogUpdate e : m_inputLog)
 				{
@@ -192,6 +207,26 @@ public class Quantify extends SynchronousProcessor
 				}
 			}
 		}
+		
+		@Override
+		public String toString()
+		{
+			StringBuilder out = new StringBuilder();
+			toString(out, "", "");
+			return out.toString();
+		}
+		
+		protected void toString(StringBuilder out, String edge, String indent)
+		{
+			out.append(indent).append(edge).append(" ").append(getSymbol()).append("\n");
+			String new_indent = indent + " ";
+			for (QuantifierEdge e : m_children)
+			{
+				e.getDestination().toString(out, e.toString(), new_indent);
+			}
+		}
+		
+		/*@ non_null @*/ protected abstract String getSymbol();
 
 		/**
 		 * Gets the current verdict of this quantifier node.
@@ -218,11 +253,11 @@ public class Quantify extends SynchronousProcessor
 			for (Object id : m_seenIdentifiers)
 			{
 				QuantifierNode n = copy(level + 1, new_trace_id);
-				new_child.m_children.add(new QuantifierEdge(id, n));
+				new_child.m_children.add(new QuantifierEdge(new_child, id, n));
 			}
 			{
 				QuantifierNode n = copy(level + 1, new_trace_id);
-				new_child.m_children.add(new QuantifierEdge(new_trace_id, n));
+				new_child.m_children.add(new QuantifierEdge(new_child, new_trace_id, n));
 			}
 			return new_child;
 		}
@@ -237,6 +272,11 @@ public class Quantify extends SynchronousProcessor
 		 * The trace identifier this quantifier edge is associated with.
 		 */
 		/*@ non_null @*/ protected final Object m_traceIdentifier;
+		
+		/**
+		 * The source node of this edge.
+		 */
+		/*@ non_null @*/ protected final QuantifierNode m_source;
 
 		/**
 		 * The destination node of this edge.
@@ -245,15 +285,18 @@ public class Quantify extends SynchronousProcessor
 
 		/**
 		 * Creates a new quantifier edge.
+		 * @param source The source node of this edge
 		 * @param trace_id The trace identifier this quantifier edge is associated
 		 * with
 		 * @param destination The destination node of this edge
 		 */
-		public QuantifierEdge(/*@ non_null @*/ Object trace_id, /*@ non_null @*/ QuantifierNode destination)
+		public QuantifierEdge(/*@ non_null @*/ QuantifierNode source, /*@ non_null @*/ Object trace_id, /*@ non_null @*/ QuantifierNode destination)
 		{
 			super();
+			m_source = source;
 			m_traceIdentifier = trace_id;
 			m_destination = destination;
+			m_destination.setParentEdge(this);
 		}
 
 		/**
@@ -266,6 +309,24 @@ public class Quantify extends SynchronousProcessor
 		{
 			return m_traceIdentifier.equals(id);
 		}
+		
+		/**
+		 * Gets the source node of this edge.
+		 * @return The node
+		 */
+		/*@ pure non_null @*/ public QuantifierNode getSource()
+		{
+			return m_source;
+		}
+		
+		/**
+		 * Gets the label node of this edge.
+		 * @return The label
+		 */
+		/*@ pure non_null @*/ public Object getLabel()
+		{
+			return m_traceIdentifier;
+		}
 
 		/**
 		 * Gets the destination node of this edge.
@@ -274,6 +335,12 @@ public class Quantify extends SynchronousProcessor
 		/*@ pure non_null @*/ public QuantifierNode getDestination()
 		{
 			return m_destination;
+		}
+		
+		@Override
+		public String toString()
+		{
+			return m_traceIdentifier.toString();
 		}
 	}
 
@@ -313,6 +380,12 @@ public class Quantify extends SynchronousProcessor
 			}
 			return all_true ? Value.TRUE : Value.INCONCLUSIVE;
 		}
+		
+		@Override
+		protected String getSymbol()
+		{
+			return "\u2200";
+		}
 	}
 
 	/**
@@ -351,6 +424,12 @@ public class Quantify extends SynchronousProcessor
 			}
 			return all_false ? Value.FALSE : Value.INCONCLUSIVE;
 		}
+		
+		@Override
+		protected String getSymbol()
+		{
+			return "\u2203";
+		}
 	}
 
 	protected class LeafNode extends QuantifierNode
@@ -382,6 +461,12 @@ public class Quantify extends SynchronousProcessor
 			m_sink = new QueueSink();
 			Connector.connect(m_phiInstance, m_sink);
 			m_verdict = null;
+		}
+		
+		@Override
+		protected String getSymbol()
+		{
+			return "P";
 		}
 
 		@Override

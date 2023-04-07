@@ -65,16 +65,16 @@ public class QuantifyTest
 		Connector.connect(q, sink);
 		Pushable p = q.getPushableInput();
 		p.push(new LogUpdate(0, 1));
-		assertFalse(queue.isEmpty());
+		assertEquals(1, queue.size());
 		assertEquals(Troolean.Value.TRUE, queue.remove());
 		p.push(new LogUpdate(1, 11));
-		assertFalse(queue.isEmpty());
+		assertEquals(1, queue.size());
 		assertEquals(Troolean.Value.TRUE, queue.remove());
 		p.push(new LogUpdate(1, 12));
-		assertFalse(queue.isEmpty());
+		assertEquals(1, queue.size());
 		assertEquals(Troolean.Value.TRUE, queue.remove());
 		p.push(new LogUpdate(0, 3));
-		assertFalse(queue.isEmpty());
+		assertEquals(1, queue.size());
 		assertEquals(Troolean.Value.FALSE, queue.remove());
 	}
 	
@@ -114,6 +114,7 @@ public class QuantifyTest
 			Integer i2 = (Integer) inputs[1];
 			int mod1 = i1 % 2;
 			int mod2 = i2 % 2;
+			System.out.println("Comparing " + i1 + " vs " + i2);
 			outputs[0] = Troolean.trooleanValue(mod1 == mod2);
 			return true;
 		}

@@ -33,7 +33,6 @@ import ca.uqac.lif.cep.hypercompliance.Quantify.QuantifierType;
 import ca.uqac.lif.cep.io.Print.Println;
 import ca.uqac.lif.cep.ltl.HardCast;
 import ca.uqac.lif.cep.tmf.Fork;
-import ca.uqac.lif.cep.tmf.KeepLast;
 import ca.uqac.lif.cep.tmf.Pump;
 import ca.uqac.lif.cep.util.Numbers;
 import ca.uqac.lif.cep.util.Sets;
@@ -100,9 +99,9 @@ public class JaccardTraces
 
 		/* Create the hyperpolicy stipulating that the condition must hold for any
 		 * two pairs of traces in a log. */
-		Quantify policy = new Quantify(condition, true, QuantifierType.ALL, QuantifierType.ALL);
+		Quantify policy = new Quantify(condition, false, true, QuantifierType.ALL, QuantifierType.ALL);
 		Pump p = new Pump();
-		connect(source, p, policy, new KeepLast(), new Println());
+		connect(source, p, policy, /*new KeepLast(), */ new Println());
 		p.run();
 	}
 

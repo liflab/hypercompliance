@@ -39,7 +39,7 @@ public class QuantifyTest
 	@Test
 	public void test1()
 	{
-		Quantify q = new Quantify(new PositivePayload(), false, QuantifierType.ALL);
+		Quantify q = new Quantify(new PositivePayload(), false, false, QuantifierType.ALL);
 		QueueSink sink = new QueueSink();
 		Queue<?> queue = sink.getQueue();
 		Connector.connect(q, sink);
@@ -53,20 +53,19 @@ public class QuantifyTest
 		p.push(new LogUpdate(0, 0));
 		assertFalse(queue.isEmpty());
 		assertEquals(Troolean.Value.FALSE, queue.remove());
-		
 	}
 	
 	@Test
 	public void test2()
 	{
-		Quantify q = new Quantify(new SameModulo(), false, QuantifierType.ALL, QuantifierType.ALL);
+		Quantify q = new Quantify(new SameModulo(), false, true, QuantifierType.ALL, QuantifierType.SOME);
 		QueueSink sink = new QueueSink();
 		Queue<?> queue = sink.getQueue();
 		Connector.connect(q, sink);
 		Pushable p = q.getPushableInput();
 		p.push(new LogUpdate(0, 1));
 		assertEquals(1, queue.size());
-		assertEquals(Troolean.Value.TRUE, queue.remove());
+		assertEquals(Troolean.Value.INCONCLUSIVE, queue.remove());
 		p.push(new LogUpdate(1, 11));
 		assertEquals(1, queue.size());
 		assertEquals(Troolean.Value.TRUE, queue.remove());

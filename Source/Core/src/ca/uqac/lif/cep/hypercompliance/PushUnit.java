@@ -24,7 +24,7 @@ import ca.uqac.lif.cep.Pushable;
 import ca.uqac.lif.cep.tmf.SinkLast;
 
 /**
- * The encapsulation of a processor connected to a sink. This is a utility
+ * The encapsulation of a 1:1 processor connected to a sink. This is a utility
  * class used by other processors such as {@link FilterLogs} and
  * {@link LogWindow}.
  */

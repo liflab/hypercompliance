@@ -44,6 +44,11 @@ import ca.uqac.lif.cep.util.Numbers;
 
 import static ca.uqac.lif.cep.Connector.connect;
 
+/**
+ * Evaluates the hyperpolicy stipulating that at any moment, the number of
+ * active cases assigned to an employee must not exceed a constant <i>n</i>.
+ * @author Sylvain Hallé 
+ */
 public class StaffLoad
 {
 

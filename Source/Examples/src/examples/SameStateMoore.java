@@ -42,12 +42,29 @@ import ca.uqac.lif.cep.util.Multiset;
 import ca.uqac.lif.cep.util.Numbers;
 import ca.uqac.lif.cep.util.Bags.RunOn;
 
+/**
+ * Evaluates the hyperpolicy that stipulates that no more than <i>k</i>
+ * instances of a process can be in the same state at the same time.
+ * <p>
+ * Contrary to {@link SameStateDirect}, where each event is taken to be
+ * directly the state of the process, here events represent
+ * <em>transitions</em> in a finite state machine. One must therefore run the
+ * finite state machine in order to know what is the current state of the
+ * process. 
+ * 
+ * @author Sylvain Hallé
+ * @see SameStateDirect
+ */
 public class SameStateMoore
 {
 	public static void main(String[] args)
 	{
+		/* The maximum number of instances that can be in the same state at the
+		 * same time. */
 		int k = 2;
 		
+		/* Create the Moore machine representing the process. Upon each transition,
+		 * the machine a number corresponding to its current state. */
 		MooreMachine m = new MooreMachine(1, 1);
 		{
 			m.addTransition(0, getTransition("a", 1));
@@ -68,6 +85,9 @@ public class SameStateMoore
 			m.addSymbol(4, new Constant(4));
 		}
 		
+		/* Create the hyperpolicy. Apart from the instantiation of SliceLog, which
+		 * takes the Moore machine as its slice processor instead of a Passthrough,
+		 * this block of code is identical to that of SameStateDirect. */
 		GroupProcessor hyperpolicy = new GroupProcessor(1, 1);
 		{
 			SliceLog slice = new SliceLog(m);
@@ -88,6 +108,8 @@ public class SameStateMoore
 		
 		connect(hyperpolicy, new Println());
 		Pushable p = hyperpolicy.getPushableInput();
+		
+		/* Push a few events to illustrate the operation. */
 		p.push(new LogUpdate(0, "a"));
 		p.push(new LogUpdate(1, "a"));
 		p.push(new LogUpdate(1, "b"));
@@ -98,9 +120,18 @@ public class SameStateMoore
 		p.push(new LogUpdate(0, "a"));
 		p.push(new LogUpdate(3, "c"));
 		p.push(new LogUpdate(2, "b"));
+		
+		/* This last log update causes a violation, as there are now 3 instances of
+		 * the process in state 1. */
 		p.push(new LogUpdate(1, "a"));
 	}
 	
+	/**
+	 * Utility method to create a new transition for the Moore machine.
+	 * @param label The transition label
+	 * @param destination The destination state
+	 * @return The transition object
+	 */
 	protected static FunctionTransition getTransition(String label, int destination)
 	{
 		return new FunctionTransition(new FunctionTree(Equals.instance, StreamVariable.X, new Constant(label)), destination);

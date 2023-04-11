@@ -37,19 +37,39 @@ import ca.uqac.lif.cep.util.Multiset;
 
 import static ca.uqac.lif.cep.Connector.connect;
 
+/**
+ * Evaluates the hyperpolicy that stipulates that no more than <i>k</i>
+ * instances of a process can be in the same state at the same time. Each event
+ * in a trace is taken to be the current state of the process.
+ * 
+ * @author Sylvain Hallé
+ * @see SameStateMoore
+ */
 public class SameStateDirect
 {
 	public static void main(String[] args)
 	{
+		/* The maximum number of instances that can be in the same state at the
+		 * same time. */
 		int k = 2;
 		
+		/* Create the hyperpolicy. */
 		GroupProcessor hyperpolicy = new GroupProcessor(1, 1);
 		{
+			/* Slice the log according to the trace identifier. */
 			SliceLog slice = new SliceLog(new Passthrough());
-			ApplyFunction vals = new ApplyFunction(new FunctionTree(Maps.values, new FunctionTree(Multiset.getCardinalities, Maps.multiValues)));
+			
+			/* Group the output of the slice according to the number of instances
+			 * being in a given state, and put these values into a set. */
+			ApplyFunction vals = new ApplyFunction(new FunctionTree(
+					Maps.values, new FunctionTree(Multiset.getCardinalities, Maps.multiValues)));
 			connect(slice, vals);
+			
+			/* Get the maximum value of the set. */
 			RunOn ro = new RunOn(new Cumulate(new CumulativeFunction<Number>(Numbers.maximum)));
 			connect(vals, ro);
+			
+			/* Assert that this maximum is less than or equal to k. */
 			Fork f = new Fork();
 			connect(ro, f);
 			ApplyFunction lte = new ApplyFunction(new FunctionTree(HardCast.instance, Numbers.isLessOrEqual));
@@ -63,9 +83,17 @@ public class SameStateDirect
 		
 		connect(hyperpolicy, new Println());
 		Pushable p = hyperpolicy.getPushableInput();
+		
+		/* Push a few events to illustrate the operation. */
 		p.push(new LogUpdate(0, "a"));
 		p.push(new LogUpdate(1, "a"));
 		p.push(new LogUpdate(1, "b"));
 		p.push(new LogUpdate(2, "a"));
+		
+		/* This last event causes a violation, as 3 processes are currently in
+		 * state a.*/
+		p.push(new LogUpdate(3, "a"));
+		
+		
 	}
 }

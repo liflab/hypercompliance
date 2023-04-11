@@ -118,7 +118,7 @@ public class StaffLoad
 		 * - Reassigning this last event to another employee (e.g. emp1) will not
 		 *   cause a violation
 		 * - Closing one of the cases before (i.e. inserting a log update and
-		 *   setting setting its action to "END") will not cause a violation either
+		 *   setting its action to "END") will not cause a violation either
 		 *   (as we are only concerned with open cases) */
 		p.push(new LogUpdate("caseid3", builder.createTuple("emp0", "a")));
 

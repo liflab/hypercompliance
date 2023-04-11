@@ -58,7 +58,10 @@ public class StaffLoad
 		 * action performed by that employee. */
 		FixedTupleBuilder builder = new FixedTupleBuilder("Employee", "Action");
 		
-		/* Create a processor that detects the end of a slice. */
+		/* Create a processor that detects the end of a slice. A slice is finished
+		 * when an event whose action is "END" is seen. When this event occurs,
+		 * the DetectEnd processor sends the end of trace signal to indicate that
+		 * the slice is over. */
 		GroupProcessor end_to_one = new GroupProcessor(1, 1);
 		{
 			DetectEnd e = new DetectEnd(new FunctionTree(Equals.instance,
@@ -115,7 +118,7 @@ public class StaffLoad
 		 * - Reassigning this last event to another employee (e.g. emp1) will not
 		 *   cause a violation
 		 * - Closing one of the cases before (i.e. inserting a log update and
-		 *   setting setting its event to null) will not cause a violation either
+		 *   setting setting its action to "END") will not cause a violation either
 		 *   (as we are only concerned with open cases) */
 		p.push(new LogUpdate("caseid3", builder.createTuple("emp0", "a")));
 

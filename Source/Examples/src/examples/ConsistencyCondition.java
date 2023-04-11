@@ -42,7 +42,7 @@ import ca.uqac.lif.cep.util.Sets;
 
 import static ca.uqac.lif.cep.Connector.connect;
 
-public class ConsistencyExample1
+public class ConsistencyCondition
 {
 	public static void main(String[] args)
 	{

@@ -35,13 +35,21 @@ import ca.uqac.lif.cep.util.Numbers;
 
 import static ca.uqac.lif.cep.Connector.connect;
 
+/**
+ * Example of a log filtering task based on a condition on individual traces.
+ * In this example, log updates are let through only for those traces contain
+ * a minimum number <i>n</i> of "a" events.
+ */
 public class FilterLogExample
 {
   public static void main(String[] args)
   {
+  	/* The number of "a" events required for events of a trace to be let
+  	 * through. */
     int n = 2;
-    // Creates the processor pipeline that checks if a trace has
-    // at least n "a" events
+    
+    /* Creates the processor pipeline that checks if a trace has
+     * at least n "a" events. */
     GroupProcessor hasNA = new GroupProcessor(1, 1);
     {
       Fork f1 = new Fork();

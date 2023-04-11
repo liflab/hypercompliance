@@ -15,4 +15,15 @@
   You should have received a copy of the GNU Lesser General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+/**
+ * In addition to BeepBeep's core engine, the examples in this package require
+ * the following
+ * <a href="https://github.com/liflab/beepbeep-3-palettes">palettes</a>:
+ * <ul>
+ * <li>Diagnostics</li>
+ * <li>Ltl</li>
+ * <li>Tuples</li>
+ * </ul>
+ */
 package examples;

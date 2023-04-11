@@ -21,6 +21,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+
+import ca.uqac.lif.cep.functions.UnaryFunction;
+
 import java.util.Set;
 
 /**
@@ -30,6 +33,11 @@ import java.util.Set;
  */
 public class LogUpdate implements AbstractLog
 {
+	/**
+	 * A single publicly visible instance of the {@link GetEvent} function.
+	 */
+	/*@ non_null @*/ public static final GetEvent getEvent = new GetEvent();
+	
   /**
    * The trace ID.
    */
@@ -132,4 +140,32 @@ public class LogUpdate implements AbstractLog
   {
     return "{" + m_id + "\u21a6" + m_event + "}";
   }
+  
+  /**
+   * A BeepBeep function that extracts the event in a log update.
+   */
+  public static class GetEvent extends UnaryFunction<LogUpdate,Object>
+  {
+  	/**
+  	 * Creates a new instance of the function. This constructor is not visible
+  	 * as a single instance is made available to users.
+  	 */
+  	protected GetEvent()
+  	{
+  		super(LogUpdate.class, Object.class);
+  	}
+
+		@Override
+		public Object getValue(LogUpdate x)
+		{
+			return x.getEvent();
+		}
+		
+		@Override
+		public GetEvent duplicate(boolean with_state)
+		{
+			return this;
+		}
+  }
 }
+

@@ -25,7 +25,11 @@ import org.junit.Test;
 
 import ca.uqac.lif.cep.Connector;
 import ca.uqac.lif.cep.Pushable;
+import ca.uqac.lif.cep.functions.Constant;
+import ca.uqac.lif.cep.functions.FunctionTree;
+import ca.uqac.lif.cep.functions.StreamVariable;
 import ca.uqac.lif.cep.tmf.QueueSink;
+import ca.uqac.lif.cep.util.Equals;
 
 /**
  * Unit tests for {@link DetectEnd}.
@@ -35,7 +39,7 @@ public class DetectEndTest
 	@Test
 	public void test1()
 	{
-		DetectEnd e = new DetectEnd(0);
+		DetectEnd e = new DetectEnd(new FunctionTree(Equals.instance, StreamVariable.X, new Constant(0)));
 		QueueSink sink = new QueueSink();
 		Connector.connect(e, sink);
 		Queue<?> q = sink.getQueue();
@@ -44,8 +48,7 @@ public class DetectEndTest
 		assertEquals(1, q.size());
 		assertEquals(1, q.remove());
 		p.push(0);
-		assertEquals(1, q.size());
-		assertEquals(0, q.remove());
+		assertEquals(0, q.size());
 		p.push(2);
 		assertEquals(0, q.size());
 	}

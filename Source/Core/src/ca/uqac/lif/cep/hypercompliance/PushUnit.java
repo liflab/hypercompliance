@@ -21,7 +21,6 @@ import ca.uqac.lif.cep.Connector;
 import ca.uqac.lif.cep.Duplicable;
 import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.Pushable;
-import ca.uqac.lif.cep.tmf.SinkLast;
 
 /**
  * The encapsulation of a 1:1 processor connected to a sink. This is a utility
@@ -43,17 +42,17 @@ class PushUnit implements Duplicable
   /**
    * The sink that collects events pushed to the processor.
    */
-  /*@ non_null @*/ protected final SinkLast m_sink;
+  /*@ non_null @*/ protected final SinkLastClear m_sink;
   
   /**
    * Creates a new push unit.
    */
   public PushUnit(Processor p)
   {
-  	this(p, new SinkLast());
+  	this(p, new SinkLastClear());
   }
   
-  protected PushUnit(Processor p, SinkLast sink)
+  protected PushUnit(Processor p, SinkLastClear sink)
   {
   	super();
   	m_processor = p;

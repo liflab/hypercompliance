@@ -28,6 +28,7 @@ import ca.uqac.lif.cep.functions.FunctionTree;
 import ca.uqac.lif.cep.functions.StreamVariable;
 import ca.uqac.lif.cep.functions.TurnInto;
 import ca.uqac.lif.cep.hypercompliance.Aggregate;
+import ca.uqac.lif.cep.hypercompliance.DetectEnd;
 import ca.uqac.lif.cep.hypercompliance.LogUpdate;
 import ca.uqac.lif.cep.hypercompliance.SliceLog.Choice;
 import ca.uqac.lif.cep.io.Print.Println;
@@ -36,13 +37,12 @@ import ca.uqac.lif.cep.tuples.FetchAttribute;
 import ca.uqac.lif.cep.tuples.FixedTupleBuilder;
 import ca.uqac.lif.cep.util.Bags.RunOn;
 import ca.uqac.lif.cep.util.Booleans;
+import ca.uqac.lif.cep.util.Equals;
 import ca.uqac.lif.cep.util.Maps;
 import ca.uqac.lif.cep.util.Maps.ApplyAll;
 import ca.uqac.lif.cep.util.Numbers;
 
 import static ca.uqac.lif.cep.Connector.connect;
-import static ca.uqac.lif.cep.Connector.INPUT;
-import static ca.uqac.lif.cep.Connector.OUTPUT;
 
 public class StaffLoad
 {
@@ -55,22 +55,32 @@ public class StaffLoad
 		
 		/* Create a builder that will create events for this example. Each event is
 		 * a tuple containing the employee assigned to a case, and the name of the
-		 * action performed by that employee.
-		 */
+		 * action performed by that employee. */
 		FixedTupleBuilder builder = new FixedTupleBuilder("Employee", "Action");
+		
+		/* Create a processor that detects the end of a slice. */
+		GroupProcessor end_to_one = new GroupProcessor(1, 1);
+		{
+			DetectEnd e = new DetectEnd(new FunctionTree(Equals.instance,
+					new FetchAttribute("Action"), new Constant("END")));
+			TurnInto one = new TurnInto(1);
+			connect(e, one);
+			end_to_one.addProcessors(e, one)
+				.associateInput(e).associateOutput(one);
+		}
 		
 		/* Create the aggregator that counts the number of active cases assigned to
 		 * an employee. This is done by transforming the events of each case into
 		 * the constant 1, and summing the last event of each live trace. */
-		Aggregate per_employee = new Aggregate(new TurnInto(1), Choice.ACTIVE, 
+		Aggregate per_employee = new Aggregate(end_to_one, Choice.ACTIVE, 
 				new Cumulate(new CumulativeFunction<Number>(Numbers.addition)));
-		
-		
 		
 		GroupProcessor hyperpolicy = new GroupProcessor(1, 1);
 		{
-			/* Split thelog by grouping traces according to the assigned employee. */
-			Slice slice = new Slice(new FunctionTree(new FetchAttribute("Employee"), LogUpdate.getEvent), per_employee);
+			/* Split the log by grouping traces according to the assigned employee. */
+			Slice slice = new Slice(
+					new FunctionTree(new FetchAttribute("Employee"), LogUpdate.getEvent),
+					per_employee);
 			
 			/* For each value of the map, evaluate whether it is less than or equal
 			 * to n. */
@@ -83,7 +93,7 @@ public class StaffLoad
 			RunOn and = new RunOn(new Cumulate(new CumulativeFunction<Boolean>(Booleans.and)));
 			connect(slice, lte, and);
 			hyperpolicy.addProcessors(slice, lte, and)
-				.associateInput(INPUT, slice, INPUT).associateOutput(OUTPUT, and, OUTPUT);
+				.associateInput(slice).associateOutput(and);
 		}
 		
 		/* Connect the hyperpolicy to processors that will print the input and
@@ -97,7 +107,7 @@ public class StaffLoad
 		p.push(new LogUpdate("caseid0", builder.createTuple("emp0", "a")));
 		p.push(new LogUpdate("caseid1", builder.createTuple("emp0", "a")));
 		p.push(new LogUpdate("caseid2", builder.createTuple("emp0", "a")));
-		p.push(new LogUpdate("caseid1", null));
+		//p.push(new LogUpdate("caseid1", builder.createTuple("emp0", "END")));
 		
 		/* This last event violates the hyperpolicy as emp0 is assigned more than n
 		 * live cases. You can try playing with these events to see the effect of

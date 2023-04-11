@@ -19,9 +19,8 @@ package ca.uqac.lif.cep.hypercompliance;
 
 import java.util.Queue;
 
-import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.SynchronousProcessor;
-import ca.uqac.lif.cep.util.Equals;
+import ca.uqac.lif.cep.functions.Function;
 
 /**
  * Lets all input events through, and sends an "end of trace" signal when a
@@ -37,18 +36,18 @@ public class DetectEnd extends SynchronousProcessor
 	protected boolean m_done;
 	
 	/**
-	 * The object used to signal the last event of a trace.
+	 * The function used to determine if an event is the last.
 	 */
-	/*@ null @*/ protected final Object m_flag;
+	protected Function m_condition;
 	
 	/**
 	 * Creates a new instance of the processor.
-	 * @param o The object used to signal the last event of a trace
+	 * @param condition The function used to determine if an event is the last
 	 */
-	public DetectEnd(Object o)
+	public DetectEnd(Function condition)
 	{
 		super(1, 1);
-		m_flag = o;
+		m_condition = condition;
 		m_done = false;
 	}
 
@@ -60,9 +59,15 @@ public class DetectEnd extends SynchronousProcessor
 			return false;
 		}
 		Object o = inputs[0];
+		Object[] outs = new Object[1];
+		m_condition.evaluate(inputs, outs);
+		m_done = (Boolean) outs[0];
+		if (m_done)
+		{
+			return false;
+		}
 		outputs.add(new Object[] {o});
-		m_done = Equals.isEqualTo(m_flag, o);
-		return !m_done;
+		return true;
 	}
 	
 	@Override
@@ -74,7 +79,7 @@ public class DetectEnd extends SynchronousProcessor
 	@Override
 	public DetectEnd duplicate(boolean with_state)
 	{
-		DetectEnd e = new DetectEnd(m_flag);
+		DetectEnd e = new DetectEnd(m_condition.duplicate(with_state));
 		if (with_state)
 		{
 			e.m_done = m_done;

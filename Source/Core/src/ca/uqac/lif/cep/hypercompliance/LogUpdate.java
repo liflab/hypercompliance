@@ -38,6 +38,11 @@ public class LogUpdate implements AbstractLog
 	 */
 	/*@ non_null @*/ public static final GetEvent getEvent = new GetEvent();
 	
+	/**
+	 * A single publicly visible instance of the {@link GetId} function.
+	 */
+	/*@ non_null @*/ public static final GetId getId = new GetId();
+	
   /**
    * The trace ID.
    */
@@ -163,6 +168,33 @@ public class LogUpdate implements AbstractLog
 		
 		@Override
 		public GetEvent duplicate(boolean with_state)
+		{
+			return this;
+		}
+  }
+  
+  /**
+   * A BeepBeep function that extracts the trace identifier in a log update.
+   */
+  public static class GetId extends UnaryFunction<LogUpdate,Object>
+  {
+  	/**
+  	 * Creates a new instance of the function. This constructor is not visible
+  	 * as a single instance is made available to users.
+  	 */
+  	protected GetId()
+  	{
+  		super(LogUpdate.class, Object.class);
+  	}
+
+		@Override
+		public Object getValue(LogUpdate x)
+		{
+			return x.getId();
+		}
+		
+		@Override
+		public GetId duplicate(boolean with_state)
 		{
 			return this;
 		}

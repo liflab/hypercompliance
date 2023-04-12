@@ -17,6 +17,8 @@
  */
 package examples;
 
+import static ca.uqac.lif.cep.Connector.connect;
+
 import ca.uqac.lif.cep.GroupProcessor;
 import ca.uqac.lif.cep.Pushable;
 import ca.uqac.lif.cep.functions.ApplyFunction;
@@ -34,8 +36,6 @@ import ca.uqac.lif.cep.util.Numbers;
 import ca.uqac.lif.cep.util.Bags.RunOn;
 import ca.uqac.lif.cep.util.Maps;
 import ca.uqac.lif.cep.util.Multiset;
-
-import static ca.uqac.lif.cep.Connector.connect;
 
 /**
  * Evaluates the hyperpolicy that stipulates that no more than <i>k</i>

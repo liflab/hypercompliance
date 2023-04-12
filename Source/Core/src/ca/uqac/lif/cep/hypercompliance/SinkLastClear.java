@@ -58,10 +58,6 @@ class SinkLastClear extends SinkLast
   {
   	super.onEndOfTrace(outputs);
   	m_seenEndOfTrace = true;
-  	for (int i = 0; i < m_last.length; i++)
-  	{
-  		m_last[i] = null;
-  	}
   	return false;
   }
   

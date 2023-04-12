@@ -34,7 +34,6 @@ import ca.uqac.lif.cep.hypercompliance.LogUpdate;
 import ca.uqac.lif.cep.hypercompliance.SliceLog.Choice;
 import ca.uqac.lif.cep.hypercompliance.Weaken;
 import ca.uqac.lif.cep.io.Print.Println;
-import ca.uqac.lif.cep.ltl.SoftCast;
 import ca.uqac.lif.cep.ltl.Troolean;
 import ca.uqac.lif.cep.ltl.TrooleanCast;
 import ca.uqac.lif.cep.tmf.Fork;
@@ -59,7 +58,9 @@ public class EvilEmployee
 {
 	public static void main(String[] args)
 	{
-		int k = 0;
+		/* The minimum number of cases that an employee must have completed in
+		 * order to be considered in the hyperpolicy. */
+		int k = 1;
 		
 		/* Create a builder that will create events for this example. Each event is
 		 * a tuple containing the employee assigned to a case, and the name of the
@@ -77,9 +78,23 @@ public class EvilEmployee
 			is_not_x.addProcessors(e, eq).associateInput(e).associateOutput(eq);
 		}
 		
+		GroupProcessor one_end = new GroupProcessor(1, 1);
+		{
+			DetectEnd e = new DetectEnd(new FunctionTree(Equals.instance,
+					new FetchAttribute("Action"), new Constant("END")));
+			TurnInto one = new TurnInto(1);
+			connect(e, one);
+			one_end.addProcessors(e, one).associateInput(e).associateOutput(one);
+		}
+		
+		/* Create a processor evaluating the condition that employees have at
+		 * least k inactive (i.e. completed) traces associated to them. This
+		 * condition is used to weaken the hyperpolicy, by avoiding alarms raised
+		 * by employees with only few cases. */
 		GroupProcessor enough_cases = new GroupProcessor(1, 1);
 		{
-			Aggregate agg = new Aggregate(new TurnInto(1), Choice.INACTIVE, new Cumulate(new CumulativeFunction<Number>(Numbers.addition)), new Object[] {0});
+			Aggregate agg = new Aggregate(one_end, Choice.INACTIVE, 
+					new Cumulate(new CumulativeFunction<Number>(Numbers.addition)), new Object[] {0});
 			Fork f = new Fork();
 			connect(agg, f);
 			ApplyFunction gte = new ApplyFunction(new FunctionTree(TrooleanCast.instance, Numbers.isGreaterOrEqual));
@@ -89,21 +104,21 @@ public class EvilEmployee
 			connect(to_k, 0, gte, 1);
 			enough_cases.addProcessors(agg, f, gte, to_k).associateInput(agg).associateOutput(gte);
 		}
-		//TurnInto enough_cases = new TurnInto(Troolean.Value.TRUE);
 		
 		/* Create the hyperpolicy. */
 		GroupProcessor hyperpolicy = new GroupProcessor(1, 1);
 		{
 			/* Slice the input stream according to each employee, and then according
-			 * to the trace identifier. For all completed traces, check if it ends
-			 * in state "x", and take the conjunction of this condition evaluated on
-			 * all completed traces. */
+			 * to the trace identifier. For all completed traces, check if at least
+			 * one of them does not end  in state "x", and take the disjunction of
+			 * this condition evaluated on all completed traces. */
 			Slice slice = new Slice(
 					new FunctionTree(new FetchAttribute("Employee"), LogUpdate.getEvent),
 					new Weaken(
 							enough_cases,
 							new Aggregate(is_not_x, Choice.INACTIVE, 
-									new Cumulate(new CumulativeFunction<Troolean.Value>(Troolean.OR_FUNCTION)), new Object[] {Troolean.Value.INCONCLUSIVE}))
+									new Cumulate(new CumulativeFunction<Troolean.Value>(Troolean.OR_FUNCTION)), 
+										new Object[] {Troolean.Value.INCONCLUSIVE}))
 					);
 			
 			/* The resulting output is a map that associates employees with a Boolean
@@ -111,10 +126,10 @@ public class EvilEmployee
 			 * disjunction. */
 			ApplyFunction values = new ApplyFunction(Maps.values);
 			connect(slice, values);
-			RunOn all = new RunOn(new Cumulate(new CumulativeFunction<Troolean.Value>(Troolean.AND_FUNCTION)));
+			RunOn all = new RunOn(new Cumulate(
+					new CumulativeFunction<Troolean.Value>(Troolean.AND_FUNCTION)));
 			connect(values, all);
-			//ApplyFunction not = new ApplyFunction(Troolean.NOT_FUNCTION);
-			//connect(all, not);
+			
 			/* The end result is a condition that returns false as soon
 			 * as one employee has all its inactive traces ending in "x". */
 			hyperpolicy.addProcessors(slice, values, all)
@@ -126,7 +141,11 @@ public class EvilEmployee
 		connect(hyperpolicy, new Println());
 		p.push(new LogUpdate(0, builder.createTuple("emp0", "x")));
 		p.push(new LogUpdate(0, builder.createTuple("emp0", "END")));
-		p.push(new LogUpdate(0, builder.createTuple("emp1", "a")));
-		p.push(new LogUpdate(0, builder.createTuple("emp1", "END")));
+		//p.push(new LogUpdate(0, builder.createTuple("emp1", "a")));
+		//p.push(new LogUpdate(0, builder.createTuple("emp1", "END")));
+		p.push(new LogUpdate(1, builder.createTuple("emp0", "x")));
+		p.push(new LogUpdate(1, builder.createTuple("emp0", "END")));
+		p.push(new LogUpdate(2, builder.createTuple("emp0", "x")));
+		p.push(new LogUpdate(2, builder.createTuple("emp0", "END")));
 	}
 }

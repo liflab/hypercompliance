@@ -60,7 +60,7 @@ public class EvilEmployee
 	{
 		/* The minimum number of cases that an employee must have completed in
 		 * order to be considered in the hyperpolicy. */
-		int k = 1;
+		int k = 2;
 		
 		/* Create a builder that will create events for this example. Each event is
 		 * a tuple containing the employee assigned to a case, and the name of the
@@ -141,8 +141,8 @@ public class EvilEmployee
 		connect(hyperpolicy, new Println());
 		p.push(new LogUpdate(0, builder.createTuple("emp0", "x")));
 		p.push(new LogUpdate(0, builder.createTuple("emp0", "END")));
-		//p.push(new LogUpdate(0, builder.createTuple("emp1", "a")));
-		//p.push(new LogUpdate(0, builder.createTuple("emp1", "END")));
+		p.push(new LogUpdate(0, builder.createTuple("emp1", "a")));
+		p.push(new LogUpdate(0, builder.createTuple("emp1", "END")));
 		p.push(new LogUpdate(1, builder.createTuple("emp0", "x")));
 		p.push(new LogUpdate(1, builder.createTuple("emp0", "END")));
 		p.push(new LogUpdate(2, builder.createTuple("emp0", "x")));

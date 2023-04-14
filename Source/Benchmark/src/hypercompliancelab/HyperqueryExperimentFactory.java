@@ -23,15 +23,28 @@ import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.experiment.ExperimentFactory;
 import ca.uqac.lif.labpal.region.Point;
+import ca.uqac.lif.synthia.Seedable;
 import hypercompliancelab.simple.AverageLength;
 import hypercompliancelab.simple.NumberRunning;
+import hypercompliancelab.simple.SameNumberDAggregation;
+import hypercompliancelab.simple.SameNumberDQuantify;
 import hypercompliancelab.simple.SimpleSource;
 
-public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExperiment>
+public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExperiment> implements Seedable
 {
+	protected int m_seed;
+	
 	public HyperqueryExperimentFactory(Laboratory lab)
 	{
 		super(lab);
+		m_seed = 0;
+	}
+	
+	@Override
+	public HyperqueryExperimentFactory setSeed(int seed)
+	{
+		m_seed = seed;
+		return this;
 	}
 	
 	@Override
@@ -42,7 +55,7 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		String scenario = (String) p.get(SourceProvider.SCENARIO);
 		if (scenario.compareTo(SimpleSource.NAME) == 0)
 		{
-			source = new SimpleSource(10000);
+			source = new SimpleSource(10000, m_seed);
 		}
 		String hyperquery = (String) p.get(HyperqueryProvider.QUERY);
 		switch (hyperquery)
@@ -52,6 +65,12 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 			break;
 		case NumberRunning.NAME:
 			query = new NumberRunning();
+			break;
+		case SameNumberDAggregation.NAME:
+			query = new SameNumberDAggregation();
+			break;
+		case SameNumberDQuantify.NAME:
+			query = new SameNumberDQuantify();
 			break;
 		}
 		if (source == null || query == null)

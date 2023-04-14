@@ -30,6 +30,7 @@ import ca.uqac.lif.labpal.experiment.ExperimentException;
 import ca.uqac.lif.labpal.util.Stopwatch;
 import ca.uqac.lif.units.Time;
 import ca.uqac.lif.units.si.Millisecond;
+import ca.uqac.lif.units.si.Second;
 
 public class HyperqueryExperiment extends Experiment
 {
@@ -69,6 +70,7 @@ public class HyperqueryExperiment extends Experiment
 		describe(TIME, "The progressive time taken to evaluate the policy on the log");
 		describe(MEMORY, "The progressive memory consumed to evaluate the policy on the log");
 		describe(TOTAL_TIME, "The total time taken to evaluate the policy on the log", Time.DIMENSION);
+		setTimeout(new Second(30));
 	}
 	
 	HyperqueryExperiment()

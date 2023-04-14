@@ -32,10 +32,13 @@ import static hypercompliancelab.HyperqueryExperiment.TIME;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.region.Region;
+import ca.uqac.lif.spreadsheet.chart.Chart.Axis;
 import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.spreadsheet.functions.ExpandAsColumns;
 import hypercompliancelab.simple.AverageLength;
 import hypercompliancelab.simple.NumberRunning;
+import hypercompliancelab.simple.SameNumberDAggregation;
+import hypercompliancelab.simple.SameNumberDQuantify;
 import hypercompliancelab.simple.SimpleSource;
 
 public class MainLab extends Laboratory
@@ -44,26 +47,29 @@ public class MainLab extends Laboratory
 	public void setup()
 	{
 		/* Setup a factory to get instances of experiments. */
-		HyperqueryExperimentFactory factory = new HyperqueryExperimentFactory(this);
+		HyperqueryExperimentFactory factory = new HyperqueryExperimentFactory(this).setSeed(0);
 		
 		{
 			// Experiments for the simple scenario
 			Region simple_reg = product(
 					extension(SourceProvider.SCENARIO, SimpleSource.NAME),
 					extension(HyperqueryProvider.QUERY,
-							AverageLength.NAME, NumberRunning.NAME));
+							AverageLength.NAME, NumberRunning.NAME, 
+							SameNumberDAggregation.NAME, SameNumberDQuantify.NAME));
 			add(new Plot(
 					add(
 							transform(
-									table(HyperqueryProvider.QUERY, EVENTS, TIME).add(factory, simple_reg),
+									table(HyperqueryProvider.QUERY, EVENTS, TIME).add(factory, simple_reg)
+										.setTitle("Progressive elapsed time (simple scenario)"),
 									new ExpandAsColumns(HyperqueryProvider.QUERY, TIME))),
-					new GnuplotScatterplot()));
+					new GnuplotScatterplot().setCaption(Axis.Y, "Time (ms)")));
 			add(new Plot(
 					add(
 							transform(
-									table(HyperqueryProvider.QUERY, EVENTS, MEMORY).add(factory, simple_reg),
+									table(HyperqueryProvider.QUERY, EVENTS, MEMORY).add(factory, simple_reg)
+										.setTitle("Progressive memory consumption (simple scenario)"),
 									new ExpandAsColumns(HyperqueryProvider.QUERY, MEMORY))),
-					new GnuplotScatterplot()));
+					new GnuplotScatterplot().setCaption(Axis.Y, "Memory (B)")));
 			
 		}
 	}

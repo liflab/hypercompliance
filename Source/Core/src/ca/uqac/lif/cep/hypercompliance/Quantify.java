@@ -498,8 +498,8 @@ public class Quantify extends SynchronousProcessor
 		/*@ non_null @*/ protected final Processor m_phiInstance;
 
 		/*@ non_null @*/ protected final QueueSink m_sink;
-
-		/*@ non_null @*/ protected final boolean[] m_completed;
+		
+		/*@ non_null @*/ protected final CompletedPassthrough[] m_completed;
 
 		protected boolean m_allCompleted;
 
@@ -510,11 +510,12 @@ public class Quantify extends SynchronousProcessor
 			super(level);
 			m_phiInstance = Quantify.this.m_phi.duplicate();
 			m_pushables = new Pushable[m_phiInstance.getInputArity()];
-			m_completed = new boolean[m_pushables.length];
+			m_completed = new CompletedPassthrough[m_pushables.length];
 			for (int i = 0; i < m_pushables.length; i++)
 			{
-				m_pushables[i] = m_phiInstance.getPushableInput(i);
-				m_completed[i] = false;
+				m_completed[i] = new CompletedPassthrough(1);
+				Connector.connect(m_completed[i], 0, m_phiInstance, i);
+				m_pushables[i] = m_completed[i].getPushableInput(0);
 			}
 			m_allCompleted = false;
 			m_sink = new QueueSink();
@@ -537,24 +538,20 @@ public class Quantify extends SynchronousProcessor
 				if (o == null)
 				{
 					m_pushables[i].notifyEndOfTrace();
-					m_completed[i] = true;
 				}
 				else
 				{
 					m_pushables[i].push(o);
 				}
 			}
-			if (o == null)
-			{
-				m_allCompleted = allCompleted();
-			}
+			m_allCompleted = allCompleted();
 		}
 
 		protected boolean allCompleted()
 		{
-			for (boolean b : m_completed)
+			for (CompletedPassthrough cp : m_completed)
 			{
-				if (!b)
+				if (!cp.seenEndOfTrace())
 				{
 					return false;
 				}

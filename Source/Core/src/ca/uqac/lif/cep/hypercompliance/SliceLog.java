@@ -17,6 +17,7 @@
  */
 package ca.uqac.lif.cep.hypercompliance;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
 import java.util.TreeMap;
@@ -103,19 +104,27 @@ public class SliceLog extends SynchronousProcessor
 			spu.push(upd.getEvent());
 		}
 		TreeMap<Object,Object> out_map = new TreeMap<Object,Object>();
-		for (Object k : m_slices.keySet())
+		Iterator<Map.Entry<Object,SlicePushUnit>> it = m_slices.entrySet().iterator();
+		while (it.hasNext())
 		{
-			SlicePushUnit spu = m_slices.get(k);
+			Map.Entry<Object,SlicePushUnit> entry = it.next();
+			SlicePushUnit spu = entry.getValue();
+			if (!spu.isActive() && m_choice == Choice.ACTIVE)
+			{
+				it.remove();
+				continue;
+			}
 			if (isChosen(spu))
 			{
 				Object last = spu.getLast();
 				if (last != null)
 				{
-					out_map.put(k, spu.getLast());
+					out_map.put(entry.getKey(), spu.getLast());
 				}
 			}
 		}
 		Object o = processMap(out_map);
+		//System.out.println(m_slices.size());
 		if (o != null)
 		{
 			outputs.add(new Object[] {o});
@@ -201,8 +210,11 @@ public class SliceLog extends SynchronousProcessor
 		public void push(Object o)
 		{
 			super.push(o);
-			if (o == null)
+			if (o == null || m_sink.seenEndOfTrace())
 			{
+				// We set these to null to "delete" them
+				m_processor = null;
+				m_pushable = null;
 				m_isActive = false;
 			}
 		}

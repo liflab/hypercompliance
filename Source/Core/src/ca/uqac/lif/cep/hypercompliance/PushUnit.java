@@ -32,12 +32,12 @@ class PushUnit implements Duplicable
 	/**
    * The processor to which events are pushed.
    */
-  /*@ non_null @*/ protected final Processor m_processor;
+  /*@ null @*/ protected Processor m_processor;
 
   /**
    * The pushable object to push events to this processor.
    */
-  /*@ non_null @*/ protected final Pushable m_pushable;
+  /*@ null @*/ protected Pushable m_pushable;
 
   /**
    * The sink that collects events pushed to the processor.

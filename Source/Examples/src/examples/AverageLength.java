@@ -36,7 +36,10 @@ import ca.uqac.lif.cep.Connector;
 
 /**
  * Example of a hyperquery that evaluates the average length (in number
- * of events) of all traces in a log.
+ * of events) of all traces in a log. Graphically, this pipeline can be
+ * represented as follows:
+ * <p>
+ * <img src="{@docRoot}/doc-files/AverageLength.png" alt="Pipeline"/>
  */
 public class AverageLength
 {

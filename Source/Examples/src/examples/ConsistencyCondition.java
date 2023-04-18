@@ -42,6 +42,20 @@ import ca.uqac.lif.cep.util.Sets;
 
 import static ca.uqac.lif.cep.Connector.connect;
 
+/**
+ * Evaluates the hyperpolicy that stipulates that every trace that contains an
+ * "a" must end with an "a". Graphically, this pipeline can be
+ * represented as follows:
+ * <p>
+ * <img src="{@docRoot}/doc-files/ConsistencyCondition.png" alt="Pipeline"/>
+ * <p>
+ * The pipeline filters out logs that do not contain an "a", and aggregates the
+ * remaining logs according to their last event. Then the hyperpolicy asserts
+ * that the resulting set is of cardinality at most 1.
+ *  
+ * @author Sylvain Hallé
+ *
+ */
 public class ConsistencyCondition
 {
 	public static void main(String[] args)

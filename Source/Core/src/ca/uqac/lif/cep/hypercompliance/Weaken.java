@@ -24,12 +24,29 @@ import ca.uqac.lif.cep.functions.ApplyFunction;
 import ca.uqac.lif.cep.ltl.Troolean;
 import ca.uqac.lif.cep.tmf.Fork;
 
+/**
+ * Contextualizes the evaluation of a (hyper)policy by subordinating it to the
+ * truth value of another condition.
+ * 
+ * @author Sylvain Hallé
+ */
 public class Weaken extends GroupProcessor
 {
+  /**
+   * The condition that determines if the policy should be evaluated.
+   */
 	protected final Processor m_phi;
 	
+	/**
+	 * The policy to evaluate.
+	 */
 	protected final Processor m_psi;
 	
+	/**
+	 * Creates a new instance of the processor.
+	 * @param psi The condition that determines if the policy should be evaluated
+	 * @param phi The policy to evaluate
+	 */
 	public Weaken(Processor psi, Processor phi)
 	{
 		super(1, 1);

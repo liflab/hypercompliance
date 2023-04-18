@@ -44,7 +44,7 @@ import static ca.uqac.lif.cep.Connector.connect;
 
 /**
  * Evaluates the hyperpolicy that stipulates that every trace that contains an
- * "a" must end with an "a". Graphically, this pipeline can be
+ * "a" must end in the same state. Graphically, this pipeline can be
  * represented as follows:
  * <p>
  * <img src="{@docRoot}/doc-files/ConsistencyCondition.png" alt="Pipeline"/>

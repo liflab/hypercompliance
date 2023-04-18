@@ -50,6 +50,11 @@ import ca.uqac.lif.cep.util.Multiset;
  * Note that in this scenario, a case is not assigned to a single employee.
  * Each individual event in the case can be arbitrarily assigned to any
  * employee.
+ * <p>
+ * Graphically, this pipeline can be represented as follows:
+ * <p>
+ * <img src="{@docRoot}/doc-files/BalancedLoad.png" alt="Pipeline"/>
+ * 
  *  
  * @author Sylvain Hallé
  */

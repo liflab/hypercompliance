@@ -24,6 +24,8 @@ import java.util.TreeMap;
 
 import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.SynchronousProcessor;
+import ca.uqac.lif.cep.tmf.PushUnit;
+import ca.uqac.lif.cep.tmf.SinkLast;
 
 /**
  * A processor that receives log update events, and evaluates the result of a
@@ -192,10 +194,10 @@ public class SliceLog extends SynchronousProcessor
 
 		public SlicePushUnit(Processor p)
 		{
-			this(p, new SinkLastClear());
+			this(p, new SinkLast());
 		}
 
-		public SlicePushUnit(Processor p, SinkLastClear sink)
+		public SlicePushUnit(Processor p, SinkLast sink)
 		{
 			super(p, sink);
 			m_isActive = true;

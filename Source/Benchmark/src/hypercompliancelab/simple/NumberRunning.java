@@ -11,7 +11,7 @@ import ca.uqac.lif.cep.functions.FunctionTree;
 import ca.uqac.lif.cep.functions.StreamVariable;
 import ca.uqac.lif.cep.functions.TurnInto;
 import ca.uqac.lif.cep.hypercompliance.Aggregate;
-import ca.uqac.lif.cep.hypercompliance.DetectEnd;
+import ca.uqac.lif.cep.tmf.DetectEnd;
 import ca.uqac.lif.cep.util.Equals;
 import ca.uqac.lif.cep.util.Numbers;
 

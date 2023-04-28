@@ -6,6 +6,8 @@ import ca.uqac.lif.cep.Connector;
 import ca.uqac.lif.cep.GroupProcessor;
 import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.functions.ApplyFunction;
+import ca.uqac.lif.cep.tmf.PushUnit;
+import ca.uqac.lif.cep.tmf.SinkLast;
 import ca.uqac.lif.cep.util.Bags.RunOn;
 import ca.uqac.lif.cep.util.Maps;
 
@@ -59,7 +61,7 @@ public class Aggregate extends SliceLog
 		
 		/*@ null @*/ protected final Object[] m_defaultValues;
 		
-		protected AggregationPushUnit(Processor p, SinkLastClear sink, Object[] default_values)
+		protected AggregationPushUnit(Processor p, SinkLast sink, Object[] default_values)
 		{
 			super(getGroup(p, default_values), sink);
 			m_aggregator = p;
@@ -68,7 +70,7 @@ public class Aggregate extends SliceLog
 		
 		protected AggregationPushUnit(Processor p, Object[] default_values)
 		{
-			this(p, new SinkLastClear(), default_values);
+			this(p, new SinkLast(), default_values);
 		}
 		
 		protected AggregationPushUnit(Processor p)

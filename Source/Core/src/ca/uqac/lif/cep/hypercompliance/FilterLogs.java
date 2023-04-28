@@ -26,6 +26,7 @@ import java.util.TreeMap;
 import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.SynchronousProcessor;
 import ca.uqac.lif.cep.ltl.Troolean;
+import ca.uqac.lif.cep.tmf.PushUnit;
 
 /**
  * A processor that releases log update events from traces in a log only for

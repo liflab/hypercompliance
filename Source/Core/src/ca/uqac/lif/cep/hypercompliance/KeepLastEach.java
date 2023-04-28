@@ -18,7 +18,6 @@
 package ca.uqac.lif.cep.hypercompliance;
 
 import java.util.Iterator;
-import java.util.concurrent.Future;
 
 import ca.uqac.lif.cep.Pullable;
 import ca.uqac.lif.cep.Pushable;
@@ -105,13 +104,6 @@ public class KeepLastEach extends SemiSynchronousProcessor
 		{
 			m_lasts[m_index] = o;
 			return this;
-		}
-
-		@Override
-		public Future<Pushable> pushFast(Object o)
-		{
-			push(o);
-			return Pushable.NULL_FUTURE;
 		}
 
 		@Override

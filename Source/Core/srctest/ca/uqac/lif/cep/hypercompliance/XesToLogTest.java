@@ -24,6 +24,9 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
+import ca.uqac.lif.cep.tuples.Tuple;
+import ca.uqac.lif.cep.tuples.TupleMap;
+
 /**
  * Unit tests for {@link XesToLog}.
  */
@@ -37,5 +40,17 @@ public class XesToLogTest
     Log log = x.getLog(is);
     is.close();
     assertEquals(1, log.size());
+    assertNotNull(log.get("request for payment 148214"));
+  }
+  
+  @Test
+  public void testAppend1() throws IOException
+  {
+    XesToLog x = new XesToLog("Rfp_id");
+    InputStream is = XesToLogTest.class.getResourceAsStream("resource/parsingtest.xes");
+    Log log = x.getLog(is);
+    is.close();
+    assertEquals(1, log.size());
+    log.appendTo("request for payment 148214", log.get("request for payment 148214"));
   }
 }

@@ -18,6 +18,7 @@
 package ca.uqac.lif.cep.hypercompliance;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +96,7 @@ public class XesToLog
       XAttribute trace_id = trace_atts.get(m_caseId);
       for (XEvent event : xtrace)
       {
-        log.appendTo(trace_id, Arrays.asList(eventToTuple(event)));
+        log.appendTo(castValue((XAttributeImpl) trace_id), new ArrayList<Object>(Arrays.asList(eventToTuple(event))));
       }
     }
     return log;

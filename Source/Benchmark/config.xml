@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Configuration file for AntRun.
+  
+  Use this file to override the default properties contained
+  in build.xml. For example, to override the build.jar.filename
+  property (which sets the name of the compiled jar file), add
+  an element
+  
+  <jar>
+    <filename>foo</filename>
+  </jar>
+  
+  inside the <build> element.
+  
+  **Caveat emptor:** in some cases, changing this file and running ant
+  again will result in Ant using a cached version of the old file! Run
+  "ant dummy" to make sure that the correct data is being read. Otherwise
+  you might need to run "ant clean" and start over.
+-->
+<build>
+  <!-- Uncomment any of these if you want to override the build
+       script's default values -->
+
+  <!-- The project's name -->
+  <name>BeepBeep Hypercompliance LabPal Benchmark</name>
+  
+  <!-- The project's author. Currently this only
+  shows up in the footer of the Javadoc documentation. -->
+  <author>Sylvain Hallé</author>
+  
+  <!-- The project's main class -->
+  <mainclass>hypercompliancelab.MainLab</mainclass>
+  
+  <!-- The target JDK for which we are compiling -->
+  <targetjdk>11</targetjdk>
+  
+  <jar>
+    <filename>hypercompliance-lab</filename>
+  </jar>
+
+  <!-- Folder locations -->
+  <srcdir>src</srcdir>
+  <bindir>bin</bindir>
+  <depdir>dep</depdir>
+  <libdir>lib</libdir>
+  
+  <test>
+    <srcdir>srctest</srcdir>
+    <bindir>bintest</bindir>
+    <!-- The filename pattern to recognize test files -->
+    <!-- <filenamepattern>
+           <src>**/*Test.java</src>
+           <bin>**/*Test.class</bin>
+         </filenamepattern> -->
+  </test>
+  
+  <!--
+    Write JAR dependencies here.
+  -->
+  <dependencies>
+    <!-- LabPal is required by the benchmark -->
+    <dependency>
+      <name>LabPal</name>
+      <classname>ca.uqac.lif.labpal.Laboratory</classname>
+      <files>
+        <jar>https://github.com/liflab/labpal/releases/download/v2.99-beta1/labpal.jar</jar>
+      </files>
+      <bundle>false</bundle>
+    </dependency>
+    <!-- Synthia is required to generate logs -->
+    <dependency>
+      <name>Synthia (core)</name>
+      <classname>ca.uqac.lif.synthia.Picker</classname>
+      <files>
+        <jar>https://github.com/liflab/synthia/releases/download/v0.3.1/synthia-core.jar</jar>
+      </files>
+      <bundle>false</bundle>
+    </dependency>
+    <!-- BeepBeep is required by the hypercompliance palette -->
+    <dependency>
+      <name>BeepBeep 3</name>
+      <classname>ca.uqac.lif.cep.Processor</classname>
+      <files>
+        <jar>https://github.com/liflab/beepbeep-3/releases/download/v0.10.9-alpha/beepbeep-3-0.10.9.jar</jar>
+      </files>
+      <bundle>false</bundle>
+    </dependency>
+  </dependencies>
+</build>

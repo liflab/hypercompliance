@@ -64,9 +64,18 @@
       <name>LabPal</name>
       <classname>ca.uqac.lif.labpal.Laboratory</classname>
       <files>
-        <jar>https://github.com/liflab/labpal/releases/download/v2.99-beta1/labpal.jar</jar>
+        <jar>https://github.com/liflab/labpal/releases/download/v2.99-beta2/labpal.jar</jar>
       </files>
-      <bundle>false</bundle>
+      <bundle>true</bundle>
+    </dependency>
+    <!-- Azrael Size extension for memory consumption -->
+    <dependency>
+      <name>Azrael (size)</name>
+      <classname>ca.uqac.lif.azrael.size.SizePrinter</classname>
+      <files>
+        <jar>https://github.com/sylvainhalle/Azrael/releases/download/v2.1.2/azrael-size-2.1.2.jar</jar>
+      </files>
+      <bundle>true</bundle>
     </dependency>
     <!-- Synthia is required to generate logs -->
     <dependency>
@@ -75,7 +84,7 @@
       <files>
         <jar>https://github.com/liflab/synthia/releases/download/v0.3.1/synthia-core.jar</jar>
       </files>
-      <bundle>false</bundle>
+      <bundle>true</bundle>
     </dependency>
     <!-- BeepBeep is required by the hypercompliance palette -->
     <dependency>
@@ -84,7 +93,7 @@
       <files>
         <jar>https://github.com/liflab/beepbeep-3/releases/download/v0.10.9-alpha/beepbeep-3-0.10.9.jar</jar>
       </files>
-      <bundle>false</bundle>
+      <bundle>true</bundle>
     </dependency>
   </dependencies>
 </build>

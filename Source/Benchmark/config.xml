@@ -64,7 +64,7 @@
       <name>LabPal</name>
       <classname>ca.uqac.lif.labpal.Laboratory</classname>
       <files>
-        <jar>https://github.com/liflab/labpal/releases/download/v2.99-beta2/labpal.jar</jar>
+        <jar>https://github.com/liflab/labpal/releases/download/v2.99-beta2/labpal-2.99-beta2.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>

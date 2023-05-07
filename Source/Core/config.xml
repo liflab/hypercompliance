@@ -24,6 +24,9 @@
 
   <!-- The project's name -->
   <name>BeepBeep Hypercompliance Palette</name>
+
+  <version>1.0</version>
+  <package>ca/uqac/lif/cep/hypercompliance/</package>
   
   <!-- The project's author. Currently this only
   shows up in the footer of the Javadoc documentation. -->

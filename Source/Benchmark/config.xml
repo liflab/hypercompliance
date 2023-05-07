@@ -28,6 +28,9 @@
   <!-- The project's author. Currently this only
   shows up in the footer of the Javadoc documentation. -->
   <author>Sylvain Hallé</author>
+
+  <version>1.0</version>
+  <package>hypercompliancelab/</package>
   
   <!-- The project's main class -->
   <mainclass>hypercompliancelab.MainLab</mainclass>
@@ -64,7 +67,7 @@
       <name>LabPal</name>
       <classname>ca.uqac.lif.labpal.Laboratory</classname>
       <files>
-        <jar>https://github.com/liflab/labpal/releases/download/v2.99-beta2/labpal-2.99-beta2.jar</jar>
+        <jar>https://github.com/liflab/labpal/releases/download/v2.99-beta3/labpal-2.99-beta3.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>

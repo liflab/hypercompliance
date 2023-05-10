@@ -85,7 +85,7 @@
       <name>Synthia (core)</name>
       <classname>ca.uqac.lif.synthia.Picker</classname>
       <files>
-        <jar>https://github.com/liflab/synthia/releases/download/v0.3.1/synthia-core.jar</jar>
+        <jar>https://github.com/liflab/synthia/releases/download/v0.3.2/synthia-core-0.3.2.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>

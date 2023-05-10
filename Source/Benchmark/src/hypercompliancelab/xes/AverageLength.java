@@ -37,6 +37,11 @@ import ca.uqac.lif.cep.util.Numbers;
  */
 public class AverageLength extends Aggregate
 {
+	/**
+	 * The name of this hyperquery.
+	 */
+	public static final transient String NAME = "Average length";
+	
 	public AverageLength(Function end_condition)
 	{
 		super(getPerSlice(end_condition), Choice.INACTIVE, getAggregation());

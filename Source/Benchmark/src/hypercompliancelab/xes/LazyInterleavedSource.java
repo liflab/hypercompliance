@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import ca.uqac.lif.cep.ProcessorException;
+import ca.uqac.lif.cep.functions.Function;
 import ca.uqac.lif.cep.hypercompliance.InterleavedSource;
 import ca.uqac.lif.cep.hypercompliance.Log;
 import ca.uqac.lif.cep.hypercompliance.XesToLog;
@@ -20,7 +21,7 @@ import ca.uqac.lif.fs.FileSystemException;
  * @author Sylvain Hallé
  *
  */
-public class LazyInterleavedSource extends InterleavedSource
+public abstract class LazyInterleavedSource extends InterleavedSource
 {
   protected final FileSystem m_fs;
   
@@ -57,4 +58,11 @@ public class LazyInterleavedSource extends InterleavedSource
       throw new ProcessorException(e);
     }
   }
+  
+  public String getFilename()
+  {
+  	return m_filename;
+  }
+  
+  public abstract Function getEndCondition();
 }

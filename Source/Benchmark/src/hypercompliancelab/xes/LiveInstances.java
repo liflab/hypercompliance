@@ -30,6 +30,11 @@ import ca.uqac.lif.cep.util.Numbers;
 
 public class LiveInstances extends Aggregate
 {
+	/**
+	 * The name of this hyperquery.
+	 */
+	public static final transient String NAME = "Concurrent instances";
+	
   public LiveInstances(Function end_condition)
   {
     super(getPerInstance(end_condition), Choice.ACTIVE, new Cumulate(new CumulativeFunction<Number>(Numbers.addition)), new Object[] {0});

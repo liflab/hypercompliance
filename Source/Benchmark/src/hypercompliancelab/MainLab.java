@@ -27,8 +27,13 @@ import static ca.uqac.lif.labpal.util.PermutationIterator.permute;
 
 import static hypercompliancelab.HyperqueryExperiment.EVENTS;
 import static hypercompliancelab.HyperqueryExperiment.MEMORY;
+import static hypercompliancelab.HyperqueryExperiment.THROUGHPUT;
 import static hypercompliancelab.HyperqueryExperiment.TIME;
+import static hypercompliancelab.HyperqueryExperiment.TOTAL_EVENTS;
 
+import ca.uqac.lif.fs.FileSystem;
+import ca.uqac.lif.fs.FileSystemException;
+import ca.uqac.lif.fs.HardDisk;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.region.Region;
@@ -40,6 +45,7 @@ import hypercompliancelab.simple.NumberRunning;
 import hypercompliancelab.simple.SameNumberDAggregation;
 import hypercompliancelab.simple.SameNumberDQuantify;
 import hypercompliancelab.simple.SimpleSource;
+import hypercompliancelab.xes.LiveInstances;
 import hypercompliancelab.xes.bpi2011.Bpi2011Source;
 
 public class MainLab extends Laboratory
@@ -47,8 +53,21 @@ public class MainLab extends Laboratory
 	@Override
 	public void setup()
 	{
+		FileSystem fs;
+		try
+		{
+			fs = new HardDisk(".").open();
+			fs.mkdir("data/");
+			fs.chdir("data/");
+		}
+		catch (FileSystemException e)
+		{
+			System.err.println(e);
+			return;
+		}
+		
 		/* Setup a factory to get instances of experiments. */
-		HyperqueryExperimentFactory factory = new HyperqueryExperimentFactory(this).setSeed(0);
+		HyperqueryExperimentFactory factory = new HyperqueryExperimentFactory(this, fs).setSeed(0);
 		
 		{
 			// Experiments for the simple scenario (auto-generated)
@@ -76,8 +95,12 @@ public class MainLab extends Laboratory
 		{
 		  // Experiments for a set of pre-recorded XES logs from external sources
 		  Region xes_reg = product(
-		      extension(SourceProvider.SCENARIO, Bpi2011Source.NAME)
+		      extension(SourceProvider.SCENARIO, Bpi2011Source.NAME),
+		      extension(HyperqueryProvider.QUERY,
+							LiveInstances.NAME)
 		      );
+		  //add(table(SourceProvider.SCENARIO, TOTAL_EVENTS /*, THROUGHPUT, MEMORY*/).add(factory, xes_reg)
+		  		//.setTitle("Aggregate statistics for various real-world logs"));
 		}
 	}
 	

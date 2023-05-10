@@ -20,6 +20,7 @@ package hypercompliancelab;
 import java.lang.reflect.Constructor;
 
 import ca.uqac.lif.cep.Processor;
+import ca.uqac.lif.fs.FileSystem;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.experiment.ExperimentFactory;
 import ca.uqac.lif.labpal.region.Point;
@@ -29,15 +30,21 @@ import hypercompliancelab.simple.NumberRunning;
 import hypercompliancelab.simple.SameNumberDAggregation;
 import hypercompliancelab.simple.SameNumberDQuantify;
 import hypercompliancelab.simple.SimpleSource;
+import hypercompliancelab.xes.LazyInterleavedSource;
+import hypercompliancelab.xes.LiveInstances;
+import hypercompliancelab.xes.bpi2011.Bpi2011Source;
 
 public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExperiment> implements Seedable
 {
 	protected int m_seed;
 	
-	public HyperqueryExperimentFactory(Laboratory lab)
+	protected FileSystem m_fs;
+	
+	public HyperqueryExperimentFactory(Laboratory lab, FileSystem fs)
 	{
 		super(lab);
 		m_seed = 0;
+		m_fs = fs;
 	}
 	
 	@Override
@@ -53,11 +60,22 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		Processor source = null;
 		Processor query = null;
 		String scenario = (String) p.get(SourceProvider.SCENARIO);
-		if (scenario.compareTo(SimpleSource.NAME) == 0)
-		{
-			source = new SimpleSource(10000, m_seed);
-		}
 		String hyperquery = (String) p.get(HyperqueryProvider.QUERY);
+		FileSystem fs = null;
+		String trace_file = null;
+		// Select the appropriate source
+		switch (scenario)
+		{
+		case SimpleSource.NAME:
+			source = new SimpleSource(10000, m_seed);
+			break;
+		case Bpi2011Source.NAME:
+			source = new Bpi2011Source(m_fs);
+			trace_file = ((LazyInterleavedSource) source).getFilename();
+			fs = m_fs;
+			break;
+		}
+		// Select the appropriate hyperquery
 		switch (hyperquery)
 		{
 		case AverageLength.NAME:
@@ -72,12 +90,15 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		case SameNumberDQuantify.NAME:
 			query = new SameNumberDQuantify();
 			break;
+		case LiveInstances.NAME:
+			query = new LiveInstances(((LazyInterleavedSource) source).getEndCondition());
+			break;
 		}
 		if (source == null || query == null)
 		{
 			return null;
 		}
-		HyperqueryExperiment he = new HyperqueryExperiment(source, query);
+		HyperqueryExperiment he = new HyperqueryExperiment(source, query, trace_file, fs);
 		he.writeInput(SourceProvider.SCENARIO, scenario);
 		he.writeInput(HyperqueryProvider.QUERY, hyperquery);
 		he.setSourceLength(10000);

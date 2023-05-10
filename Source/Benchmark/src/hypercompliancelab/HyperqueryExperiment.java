@@ -24,11 +24,15 @@ import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.Pullable;
 import ca.uqac.lif.cep.Pushable;
 import ca.uqac.lif.cep.tmf.BlackHole;
+import ca.uqac.lif.fs.FileSystem;
+import ca.uqac.lif.fs.FileSystemException;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.labpal.experiment.Experiment;
 import ca.uqac.lif.labpal.experiment.ExperimentException;
 import ca.uqac.lif.labpal.util.Stopwatch;
+import ca.uqac.lif.units.Frequency;
 import ca.uqac.lif.units.Time;
+import ca.uqac.lif.units.si.Hertz;
 import ca.uqac.lif.units.si.Millisecond;
 import ca.uqac.lif.units.si.Second;
 
@@ -40,7 +44,11 @@ public class HyperqueryExperiment extends Experiment
 	
 	public static final transient String MEMORY = "Memory (B)";
 	
+	public static final transient String TOTAL_EVENTS = "Events";
+	
 	public static final transient String TOTAL_TIME = "Total time (ms)";
+	
+	public static final transient String THROUGHPUT = "Throughput (Hz)";
 	
 	protected static int s_interval = 1000;
 	
@@ -58,19 +66,40 @@ public class HyperqueryExperiment extends Experiment
 	/**
 	 * The policy to evaluate.
 	 */
-	protected Processor m_policy;
+	/*@ non_null @*/ protected Processor m_policy;
 	
-	HyperqueryExperiment(Processor source, Processor policy)
+	/**
+	 * The name of the trace file this experiment depends on. May be null in
+	 * the case where the experiment uses a source that generates the events by
+	 * itself.
+	 */
+	/*@ non_null @*/ protected String m_traceFile;
+	
+	/**
+	 * The file system used to probe whether a trace file exists.
+	 */
+	protected FileSystem m_fs;
+	
+	HyperqueryExperiment(Processor source, Processor policy, String trace_file, FileSystem fs)
 	{
 		super();
 		m_source = source;
 		m_policy = policy;
+		m_traceFile = trace_file;
+		m_fs = fs;
 		m_sourceLength = -1;
 		describe(EVENTS, "The number of input events processed by the policy");
 		describe(TIME, "The progressive time taken to evaluate the policy on the log");
 		describe(MEMORY, "The progressive memory consumed to evaluate the policy on the log");
 		describe(TOTAL_TIME, "The total time taken to evaluate the policy on the log", Time.DIMENSION);
+		describe(TOTAL_EVENTS, "The total number of events in the input trace");
+		describe(THROUGHPUT, "The number of events per second processed by the hyperpolicy", Frequency.DIMENSION);
 		setTimeout(new Second(30));
+	}
+	
+	HyperqueryExperiment(Processor source, Processor policy)
+	{
+		this(source, policy, null, null);
 	}
 	
 	HyperqueryExperiment()
@@ -123,6 +152,25 @@ public class HyperqueryExperiment extends Experiment
 		}
 		long duration = Stopwatch.stop(this);
 		writeOutput(TOTAL_TIME, new Millisecond(duration));
+		writeOutput(TOTAL_EVENTS, ev_cnt);
+		writeOutput(THROUGHPUT, new Hertz(ev_cnt / duration * 1000));
+	}
+	
+	@Override
+	public boolean prerequisitesFulfilled()
+	{
+		if (m_fs != null && m_traceFile != null)
+		{
+			try
+			{
+				return m_fs.isFile(m_traceFile);
+			}
+			catch (FileSystemException e)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	protected long getMemory(ProcessorSizePrinter printer) throws ExperimentException

@@ -27,6 +27,7 @@ import ca.uqac.lif.cep.hypercompliance.Aggregate;
 import ca.uqac.lif.cep.tmf.DetectEnd;
 import ca.uqac.lif.cep.util.Numbers;
 
+
 public class LiveInstances extends Aggregate
 {
   public LiveInstances(Function end_condition)

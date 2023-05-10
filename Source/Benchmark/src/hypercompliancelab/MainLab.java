@@ -40,6 +40,7 @@ import hypercompliancelab.simple.NumberRunning;
 import hypercompliancelab.simple.SameNumberDAggregation;
 import hypercompliancelab.simple.SameNumberDQuantify;
 import hypercompliancelab.simple.SimpleSource;
+import hypercompliancelab.xes.bpi2011.Bpi2011Source;
 
 public class MainLab extends Laboratory
 {
@@ -50,7 +51,7 @@ public class MainLab extends Laboratory
 		HyperqueryExperimentFactory factory = new HyperqueryExperimentFactory(this).setSeed(0);
 		
 		{
-			// Experiments for the simple scenario
+			// Experiments for the simple scenario (auto-generated)
 			Region simple_reg = product(
 					extension(SourceProvider.SCENARIO, SimpleSource.NAME),
 					extension(HyperqueryProvider.QUERY,
@@ -70,7 +71,13 @@ public class MainLab extends Laboratory
 										.setTitle("Progressive memory consumption (simple scenario)"),
 									new ExpandAsColumns(HyperqueryProvider.QUERY, MEMORY))),
 					new GnuplotScatterplot().setCaption(Axis.Y, "Memory (B)")));
-			
+		}
+		
+		{
+		  // Experiments for a set of pre-recorded XES logs from external sources
+		  Region xes_reg = product(
+		      extension(SourceProvider.SCENARIO, Bpi2011Source.NAME)
+		      );
 		}
 	}
 	

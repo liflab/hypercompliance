@@ -37,6 +37,12 @@ public class InterleavedSource extends LogSource
    */
   /*@ non_null @*/ protected final String m_timestamp;
   
+  public InterleavedSource(String timestamp)
+  {
+    super();
+    m_timestamp = timestamp;
+  }
+  
   /**
    * Creates a new interleaved source.
    * @param log The original log containing several non-interleaved instances
@@ -48,6 +54,16 @@ public class InterleavedSource extends LogSource
   {
     super();
     m_timestamp = timestamp;
+    populateFromLog(log);
+  }
+  
+  /**
+   * Populates the internal queue of events by interleaving the events from the
+   * log according to their timestamp.
+   * @param log The log to read the events from
+   */
+  protected void populateFromLog(Log log)
+  {
     List<ComparableLogUpdate> updates = new ArrayList<ComparableLogUpdate>();
     for (Map.Entry<Object,List<Object>> e : log.entrySet())
     {
@@ -61,7 +77,6 @@ public class InterleavedSource extends LogSource
     }
     Collections.sort(updates); // Order by timestamp
     m_events.addAll(updates);
-    System.out.println(m_events.size());
   }
   
   /**

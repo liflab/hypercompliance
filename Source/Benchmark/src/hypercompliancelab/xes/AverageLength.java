@@ -1,3 +1,20 @@
+/*
+  A BeepBeep palette to evaluate hypercompliance queries.
+  Copyright (C) 2023 Sylvain Hallé
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package hypercompliancelab.xes;
 
 import static ca.uqac.lif.cep.Connector.connect;
@@ -14,11 +31,15 @@ import ca.uqac.lif.cep.tmf.DetectEnd;
 import ca.uqac.lif.cep.tmf.Fork;
 import ca.uqac.lif.cep.util.Numbers;
 
+/**
+ * Evaluates the average length of a trace in a log.
+ * @author Sylvain Hallé
+ */
 public class AverageLength extends Aggregate
 {
 	public AverageLength(Function end_condition)
 	{
-		super(getPerSlice(end_condition), Choice.ALL, getAggregation());
+		super(getPerSlice(end_condition), Choice.INACTIVE, getAggregation());
 	}
 	
 	protected static final GroupProcessor getPerSlice(Function end_condition)
@@ -30,7 +51,7 @@ public class AverageLength extends Aggregate
 			Cumulate sum = new Cumulate(new CumulativeFunction<Number>(Numbers.addition));
 			connect(one, sum);
 			addProcessors(end, one, sum);
-			associateInput(0, one, 0);
+			associateInput(0, end, 0);
 			associateOutput(0, sum, 0);
 		}};
 	}

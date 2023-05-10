@@ -25,6 +25,7 @@ import ca.uqac.lif.cep.util.Equals;
 import ca.uqac.lif.fs.FileSystemException;
 import ca.uqac.lif.fs.HardDisk;
 import hypercompliancelab.xes.AverageLength;
+import hypercompliancelab.xes.LiveInstances;
 import hypercompliancelab.xes.SelectColumns;
 
 public class Test
@@ -37,6 +38,7 @@ public class Test
 		end_event.put("time:timestamp", Long.MAX_VALUE);
 		HardDisk disk = new HardDisk("/tmp").open();
 		InputStream is = disk.readFrom("CoSeLoG WABO 1.xes");
+		//InputStream is = disk.readFrom("lite.xes");
 		XesToLog x = new XesToLog("concept:name");
 		Log log = x.getLog(is);
 		is.close();
@@ -47,12 +49,17 @@ public class Test
 		ApplyFunction project = new ApplyFunction(new SelectColumns(new String[] {"action_code"}));
 		Connector.connect(source, project);
 		//SliceLog slice = new SliceLog(new DetectEnd(new FunctionTree(Equals.instance, new Constant("END"), new FunctionTree(new FetchAttribute("action_code"), StreamVariable.X))), Choice.ACTIVE);
-		AverageLength avg = new AverageLength(new FunctionTree(Equals.instance, new Constant("END"), new FunctionTree(new FetchAttribute("action_code"), StreamVariable.X)));
+		//AverageLength avg = new AverageLength(new FunctionTree(Equals.instance, new Constant("END"), new FunctionTree(new FetchAttribute("action_code"), StreamVariable.X)));
+		LiveInstances avg = new LiveInstances(new FunctionTree(Equals.instance, new Constant("END"), new FunctionTree(new FetchAttribute("action_code"), StreamVariable.X)));
 		Connector.connect(project, avg);
-		KeepLast last = new KeepLast();
-		Connector.connect(avg, last);
-		Pullable p = last.getPullableOutput();
-		System.out.println(p.pull());
+		//KeepLast last = new KeepLast();
+		//Connector.connect(avg, last);
+		Pullable p = avg.getPullableOutput();
+		while (p.hasNext())
+		{
+		  System.out.println(p.pull());
+		}
+		
 	}
 
 }

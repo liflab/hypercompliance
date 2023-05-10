@@ -101,6 +101,9 @@ public class HyperqueryExperiment extends Experiment
 		ProcessorSizePrinter printer = new ProcessorSizePrinter();
 		printer.ignoreAccessChecks(true);
 		l_mem.add(getMemory(printer));
+		// Populate source
+		m_source.start();
+		// Process entire source
 		Stopwatch.start(this);
 		while (pl.hasNext())
 		{

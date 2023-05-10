@@ -55,6 +55,20 @@ public class Log implements AbstractLog
     }
     return this;
   }
+  
+  /**
+   * Appends the same trace suffix to all traces in a log.
+   * @param trace The suffix
+   * @return The modified log
+   */
+  /*@ non_null @*/ public Log appendToAll(List<Object> trace)
+  {
+  	for (Map.Entry<Object,List<Object>> e : entrySet())
+  	{
+  		e.getValue().addAll(trace);
+  	}
+  	return this;
+  }
 
   @Override
   /*@ non_null @*/ public Log update(/*@ non_null @*/ Log log)

@@ -51,5 +51,6 @@ public class LogSource extends QueueSource
 	protected LogSource()
 	{
 		super(1);
+		loop(false);
 	}
 }

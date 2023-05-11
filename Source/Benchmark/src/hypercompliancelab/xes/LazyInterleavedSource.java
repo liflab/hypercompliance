@@ -8,8 +8,9 @@ import ca.uqac.lif.cep.functions.Function;
 import ca.uqac.lif.cep.hypercompliance.InterleavedSource;
 import ca.uqac.lif.cep.hypercompliance.Log;
 import ca.uqac.lif.cep.hypercompliance.XesToLog;
-import ca.uqac.lif.fs.FileSystem;
 import ca.uqac.lif.fs.FileSystemException;
+import hypercompliancelab.LabFileSystem;
+import hypercompliancelab.LocalFileSource;
 
 /**
  * An {@link InterleavedSource} that only loads its events on a call to
@@ -21,15 +22,15 @@ import ca.uqac.lif.fs.FileSystemException;
  * @author Sylvain Hallé
  *
  */
-public abstract class LazyInterleavedSource extends InterleavedSource
+public abstract class LazyInterleavedSource extends InterleavedSource implements LocalFileSource
 {
-  protected final FileSystem m_fs;
+  protected final LabFileSystem m_fs;
   
   protected final String m_filename;
   
   protected final String m_caseId;
   
-  public LazyInterleavedSource(String timestamp, String case_id, FileSystem fs, String filename)
+  public LazyInterleavedSource(String timestamp, String case_id, LabFileSystem fs, String filename)
   {
     super(timestamp);
     m_caseId = case_id;
@@ -58,6 +59,18 @@ public abstract class LazyInterleavedSource extends InterleavedSource
       throw new ProcessorException(e);
     }
   }
+  
+  @Override
+  public boolean prerequisitesFulfilled() throws FileSystemException
+  {
+  	return m_fs.isFile(m_filename);
+  }
+  
+  @Override
+	public void clean() throws FileSystemException
+	{
+		m_fs.delete(m_filename);
+	}
   
   public String getFilename()
   {

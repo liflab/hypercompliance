@@ -2,8 +2,8 @@ package hypercompliancelab.xes;
 
 import ca.uqac.lif.cep.functions.UnaryFunction;
 import ca.uqac.lif.cep.hypercompliance.LogUpdate;
-import ca.uqac.lif.cep.tuples.FixedTupleBuilder;
 import ca.uqac.lif.cep.tuples.Tuple;
+import hypercompliancelab.ArrayTupleBuilder;
 
 /**
  * In a {@link LogUpdate} event that contains a {@link Tuple}, produces
@@ -14,13 +14,13 @@ public class SelectColumns extends UnaryFunction<LogUpdate,LogUpdate>
 {
 	protected final String[] m_colNames;
 	
-	protected FixedTupleBuilder m_builder;
+	protected ArrayTupleBuilder m_builder;
 	
 	public SelectColumns(String ... col_names)
 	{
 		super(LogUpdate.class, LogUpdate.class);
 		m_colNames = col_names;
-		m_builder = new FixedTupleBuilder(col_names);
+		m_builder = new ArrayTupleBuilder(col_names);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class SelectColumns extends UnaryFunction<LogUpdate,LogUpdate>
 		{
 			vals[i] = t.get(m_colNames[i]);
 		}
-		Tuple new_t = m_builder.createTupleArray(vals);
+		Tuple new_t = m_builder.createTuple(vals);
 		return new LogUpdate(u.getId(), new_t);
 	}
 }

@@ -37,6 +37,9 @@ import ca.uqac.lif.fs.HardDisk;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.region.Region;
+import ca.uqac.lif.labpal.util.CliParser;
+import ca.uqac.lif.labpal.util.CliParser.Argument;
+import ca.uqac.lif.labpal.util.CliParser.ArgumentMap;
 import ca.uqac.lif.spreadsheet.chart.Chart.Axis;
 import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.spreadsheet.functions.ExpandAsColumns;
@@ -53,12 +56,26 @@ public class MainLab extends Laboratory
 	@Override
 	public void setup()
 	{
-		FileSystem fs;
+		// The local folder where downloaded files are stored
+		String data_dir = "data/";
+		
+		/* Process command line parameters */
+		ArgumentMap args = getCliArguments();
+		if (args.hasOption("datadir"))
+		{
+			data_dir = args.getOptionValue("datadir");
+			if (!data_dir.endsWith("/"))
+			{
+				data_dir += "/";
+			}
+		}
+		
+		LabFileSystem fs;
 		try
 		{
-			fs = new HardDisk(".").open();
-			fs.mkdir("data/");
-			fs.chdir("data/");
+			fs = new LabFileSystem(".").open();
+			fs.mkdir(data_dir);
+			fs.chdir(data_dir);
 		}
 		catch (FileSystemException e)
 		{
@@ -99,9 +116,15 @@ public class MainLab extends Laboratory
 		      extension(HyperqueryProvider.QUERY,
 							LiveInstances.NAME)
 		      );
-		  //add(table(SourceProvider.SCENARIO, TOTAL_EVENTS /*, THROUGHPUT, MEMORY*/).add(factory, xes_reg)
-		  		//.setTitle("Aggregate statistics for various real-world logs"));
+		  add(table(SourceProvider.SCENARIO, HyperqueryProvider.QUERY, THROUGHPUT, MEMORY).add(factory, xes_reg)
+		  		.setTitle("Aggregate statistics for various real-world logs"));
 		}
+	}
+	
+	@Override
+	public void setupCli(CliParser parser)
+	{
+		parser.addArgument(new Argument().withLongName("datadir").withArgument("dir").withDescription("Store downloaded data files into local folder dir"));
 	}
 	
 	public static void main(String[] args)

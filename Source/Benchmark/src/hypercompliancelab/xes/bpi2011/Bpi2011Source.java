@@ -11,16 +11,17 @@ import ca.uqac.lif.cep.tuples.FetchAttribute;
 import ca.uqac.lif.cep.tuples.Tuple;
 import ca.uqac.lif.cep.tuples.TupleMap;
 import ca.uqac.lif.cep.util.Equals;
-import ca.uqac.lif.fs.FileSystem;
+import ca.uqac.lif.fs.FileSystemException;
+import hypercompliancelab.LabFileSystem;
 import hypercompliancelab.xes.LazyInterleavedSource;
 
 public class Bpi2011Source extends LazyInterleavedSource
 {
   public static final transient String NAME = "WABO";
   
-  public Bpi2011Source(FileSystem fs)
+  public Bpi2011Source(LabFileSystem fs)
   {
-    super("time:timestamp", "concept:name", fs, "lite.xes");
+    super("time:timestamp", "concept:name", fs, "CoSeLoG WABO 1.xes");
   }
   
   @Override
@@ -39,4 +40,12 @@ public class Bpi2011Source extends LazyInterleavedSource
 	{
 		return new FunctionTree(Equals.instance, new Constant("END"), new FunctionTree(new FetchAttribute("action_code"), StreamVariable.X));
 	}
+
+	@Override
+	public void fulfillPrerequisites() throws FileSystemException
+	{
+		// Download and unzip the XES file retrieved from the repository
+		m_fs.download("https://data.4tu.nl/file/a928c371-d8e8-4c14-95db-2c28078085b5/117823ec-6f79-4362-8ca6-8a190c8421a2", "CoSeLoG WABO 1.xes.gz");
+		m_fs.gunzip("CoSeLoG WABO 1.xes.gz", "CoSeLoG WABO 1.xes");
+	}	
 }

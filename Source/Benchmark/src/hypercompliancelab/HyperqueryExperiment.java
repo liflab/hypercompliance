@@ -17,14 +17,12 @@
  */
 package hypercompliancelab;
 
-
 import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.cep.Connector;
 import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.Pullable;
 import ca.uqac.lif.cep.Pushable;
 import ca.uqac.lif.cep.tmf.BlackHole;
-import ca.uqac.lif.fs.FileSystem;
 import ca.uqac.lif.fs.FileSystemException;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.labpal.experiment.Experiment;
@@ -69,24 +67,15 @@ public class HyperqueryExperiment extends Experiment
 	/*@ non_null @*/ protected Processor m_policy;
 	
 	/**
-	 * The name of the trace file this experiment depends on. May be null in
-	 * the case where the experiment uses a source that generates the events by
-	 * itself.
-	 */
-	/*@ non_null @*/ protected String m_traceFile;
-	
-	/**
 	 * The file system used to probe whether a trace file exists.
 	 */
-	protected FileSystem m_fs;
+	protected LabFileSystem m_fs;
 	
-	HyperqueryExperiment(Processor source, Processor policy, String trace_file, FileSystem fs)
+	HyperqueryExperiment(Processor source, Processor policy)
 	{
 		super();
 		m_source = source;
 		m_policy = policy;
-		m_traceFile = trace_file;
-		m_fs = fs;
 		m_sourceLength = -1;
 		describe(EVENTS, "The number of input events processed by the policy");
 		describe(TIME, "The progressive time taken to evaluate the policy on the log");
@@ -95,11 +84,6 @@ public class HyperqueryExperiment extends Experiment
 		describe(TOTAL_EVENTS, "The total number of events in the input trace");
 		describe(THROUGHPUT, "The number of events per second processed by the hyperpolicy", Frequency.DIMENSION);
 		setTimeout(new Second(30));
-	}
-	
-	HyperqueryExperiment(Processor source, Processor policy)
-	{
-		this(source, policy, null, null);
 	}
 	
 	HyperqueryExperiment()
@@ -159,11 +143,11 @@ public class HyperqueryExperiment extends Experiment
 	@Override
 	public boolean prerequisitesFulfilled()
 	{
-		if (m_fs != null && m_traceFile != null)
+		if (m_source instanceof LocalFileSource)
 		{
 			try
 			{
-				return m_fs.isFile(m_traceFile);
+				return ((LocalFileSource) m_source).prerequisitesFulfilled();
 			}
 			catch (FileSystemException e)
 			{
@@ -171,6 +155,22 @@ public class HyperqueryExperiment extends Experiment
 			}
 		}
 		return true;
+	}
+	
+	@Override
+	public void fulfillPrerequisites()
+	{
+		if (m_source instanceof LocalFileSource)
+		{
+			try
+			{
+				((LocalFileSource) m_source).fulfillPrerequisites();
+			}
+			catch (FileSystemException e)
+			{
+				return;
+			}
+		}
 	}
 	
 	protected long getMemory(ProcessorSizePrinter printer) throws ExperimentException

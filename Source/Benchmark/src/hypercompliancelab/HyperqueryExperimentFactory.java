@@ -38,9 +38,9 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 {
 	protected int m_seed;
 	
-	protected FileSystem m_fs;
+	protected LabFileSystem m_fs;
 	
-	public HyperqueryExperimentFactory(Laboratory lab, FileSystem fs)
+	public HyperqueryExperimentFactory(Laboratory lab, LabFileSystem fs)
 	{
 		super(lab);
 		m_seed = 0;
@@ -61,7 +61,7 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		Processor query = null;
 		String scenario = (String) p.get(SourceProvider.SCENARIO);
 		String hyperquery = (String) p.get(HyperqueryProvider.QUERY);
-		FileSystem fs = null;
+		LabFileSystem fs = null;
 		String trace_file = null;
 		// Select the appropriate source
 		switch (scenario)
@@ -98,7 +98,7 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		{
 			return null;
 		}
-		HyperqueryExperiment he = new HyperqueryExperiment(source, query, trace_file, fs);
+		HyperqueryExperiment he = new HyperqueryExperiment(source, query);
 		he.writeInput(SourceProvider.SCENARIO, scenario);
 		he.writeInput(HyperqueryProvider.QUERY, hyperquery);
 		he.setSourceLength(10000);

@@ -26,14 +26,13 @@ import static ca.uqac.lif.labpal.table.TransformedTable.transform;
 import static ca.uqac.lif.labpal.util.PermutationIterator.permute;
 
 import static hypercompliancelab.HyperqueryExperiment.EVENTS;
+import static hypercompliancelab.HyperqueryExperiment.MAX_MEMORY;
 import static hypercompliancelab.HyperqueryExperiment.MEMORY;
 import static hypercompliancelab.HyperqueryExperiment.THROUGHPUT;
 import static hypercompliancelab.HyperqueryExperiment.TIME;
 import static hypercompliancelab.HyperqueryExperiment.TOTAL_EVENTS;
 
-import ca.uqac.lif.fs.FileSystem;
 import ca.uqac.lif.fs.FileSystemException;
-import ca.uqac.lif.fs.HardDisk;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.region.Region;
@@ -43,7 +42,6 @@ import ca.uqac.lif.labpal.util.CliParser.ArgumentMap;
 import ca.uqac.lif.spreadsheet.chart.Chart.Axis;
 import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.spreadsheet.functions.ExpandAsColumns;
-import hypercompliancelab.simple.AverageLength;
 import hypercompliancelab.simple.NumberRunning;
 import hypercompliancelab.simple.SameNumberDAggregation;
 import hypercompliancelab.simple.SameNumberDQuantify;
@@ -91,7 +89,7 @@ public class MainLab extends Laboratory
 			Region simple_reg = product(
 					extension(SourceProvider.SCENARIO, SimpleSource.NAME),
 					extension(HyperqueryProvider.QUERY,
-							AverageLength.NAME, NumberRunning.NAME, 
+							hypercompliancelab.simple.AverageLength.NAME, NumberRunning.NAME, 
 							SameNumberDAggregation.NAME, SameNumberDQuantify.NAME));
 			add(new Plot(
 					add(
@@ -114,10 +112,10 @@ public class MainLab extends Laboratory
 		  Region xes_reg = product(
 		      extension(SourceProvider.SCENARIO, Bpi2011Source.NAME),
 		      extension(HyperqueryProvider.QUERY,
-							LiveInstances.NAME)
+							LiveInstances.NAME, hypercompliancelab.xes.AverageLength.NAME)
 		      );
-		  add(table(SourceProvider.SCENARIO, HyperqueryProvider.QUERY, THROUGHPUT, MEMORY).add(factory, xes_reg)
-		  		.setTitle("Aggregate statistics for various real-world logs"));
+		  add(table(SourceProvider.SCENARIO, TOTAL_EVENTS, HyperqueryProvider.QUERY, THROUGHPUT, MAX_MEMORY).add(factory, xes_reg)
+		  		.setTitle("Aggregate statistics for various real-world logs").setNickname("tAggregate"));
 		}
 	}
 	

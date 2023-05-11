@@ -17,13 +17,15 @@
  */
 package hypercompliancelab;
 
-import ca.uqac.lif.fs.FileSystemException;
-
-public interface LocalFileSource extends BoundedSource
+/**
+ * A source that knows how many events it produces in total.
+ * @author Sylvain Hallé
+ */
+public interface BoundedSource
 {
-	public boolean prerequisitesFulfilled() throws FileSystemException;
-	
-	public void fulfillPrerequisites() throws FileSystemException;
-	
-	public void clean() throws FileSystemException;
+	/**
+	 * Tells the total number of events produced by this source.
+	 * @return The number of events
+	 */
+	public int eventCount();
 }

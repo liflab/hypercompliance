@@ -20,12 +20,10 @@ package hypercompliancelab;
 import java.lang.reflect.Constructor;
 
 import ca.uqac.lif.cep.Processor;
-import ca.uqac.lif.fs.FileSystem;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.experiment.ExperimentFactory;
 import ca.uqac.lif.labpal.region.Point;
 import ca.uqac.lif.synthia.Seedable;
-import hypercompliancelab.simple.AverageLength;
 import hypercompliancelab.simple.NumberRunning;
 import hypercompliancelab.simple.SameNumberDAggregation;
 import hypercompliancelab.simple.SameNumberDQuantify;
@@ -61,8 +59,6 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		Processor query = null;
 		String scenario = (String) p.get(SourceProvider.SCENARIO);
 		String hyperquery = (String) p.get(HyperqueryProvider.QUERY);
-		LabFileSystem fs = null;
-		String trace_file = null;
 		// Select the appropriate source
 		switch (scenario)
 		{
@@ -71,15 +67,13 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 			break;
 		case Bpi2011Source.NAME:
 			source = new Bpi2011Source(m_fs);
-			trace_file = ((LazyInterleavedSource) source).getFilename();
-			fs = m_fs;
 			break;
 		}
 		// Select the appropriate hyperquery
 		switch (hyperquery)
 		{
-		case AverageLength.NAME:
-			query = new AverageLength();
+		case hypercompliancelab.simple.AverageLength.NAME:
+			query = new hypercompliancelab.simple.AverageLength();
 			break;
 		case NumberRunning.NAME:
 			query = new NumberRunning();
@@ -89,6 +83,9 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 			break;
 		case SameNumberDQuantify.NAME:
 			query = new SameNumberDQuantify();
+			break;
+		case hypercompliancelab.xes.AverageLength.NAME:
+			query = new hypercompliancelab.xes.AverageLength(((LazyInterleavedSource) source).getEndCondition());
 			break;
 		case LiveInstances.NAME:
 			query = new LiveInstances(((LazyInterleavedSource) source).getEndCondition());
@@ -101,7 +98,6 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		HyperqueryExperiment he = new HyperqueryExperiment(source, query);
 		he.writeInput(SourceProvider.SCENARIO, scenario);
 		he.writeInput(HyperqueryProvider.QUERY, hyperquery);
-		he.setSourceLength(10000);
 		return he;
 	}
 

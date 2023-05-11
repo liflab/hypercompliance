@@ -37,7 +37,7 @@ import ca.uqac.lif.cep.util.Numbers;
 
 public class AverageLength extends Aggregate
 {
-	public static final String NAME = "Average length";
+	public static final String NAME = "Average length (simple)";
 	
 	public AverageLength()
 	{

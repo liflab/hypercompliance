@@ -40,6 +40,8 @@ public class HyperqueryExperiment extends Experiment
 	
 	public static final transient String TIME = "Time (ms)";
 	
+	public static final transient String MAX_MEMORY = "Max memory (B)";
+	
 	public static final transient String MEMORY = "Memory (B)";
 	
 	public static final transient String TOTAL_EVENTS = "Events";
@@ -110,12 +112,20 @@ public class HyperqueryExperiment extends Experiment
 		writeOutput(EVENTS, l_events);
 		writeOutput(TIME, l_time);
 		writeOutput(MEMORY, l_mem);
-		long ev_cnt = 0;
+		long ev_cnt = 0, max_mem = 0;
 		ProcessorSizePrinter printer = new ProcessorSizePrinter();
 		printer.ignoreAccessChecks(true);
-		l_mem.add(getMemory(printer));
+		long mem = getMemory(printer);
+		l_mem.add(mem);
+		max_mem = Math.max(mem, max_mem);
 		// Populate source
 		m_source.start();
+		// Get source length
+		int source_length = 0;
+		if (m_source instanceof BoundedSource)
+		{
+			source_length = ((BoundedSource) m_source).eventCount();
+		}
 		// Process entire source
 		Stopwatch.start(this);
 		while (pl.hasNext())
@@ -128,15 +138,16 @@ public class HyperqueryExperiment extends Experiment
 				l_events.add(ev_cnt);
 				l_time.add(Stopwatch.lap(this));
 				l_mem.add(getMemory(printer));
-				if (m_sourceLength > 0)
+				if (source_length > 0)
 				{
-					setProgression((float) ev_cnt / (float) m_sourceLength);
+					setProgression((float) ev_cnt / (float) source_length);
 				}
 			}
 		}
 		long duration = Stopwatch.stop(this);
 		writeOutput(TOTAL_TIME, new Millisecond(duration));
 		writeOutput(TOTAL_EVENTS, ev_cnt);
+		writeOutput(MAX_MEMORY, max_mem);
 		writeOutput(THROUGHPUT, new Hertz(ev_cnt / duration * 1000));
 	}
 	

@@ -127,6 +127,16 @@ public class Log implements AbstractLog
   {
     return m_entries.size();
   }
+  
+  public int eventCount()
+  {
+  	int ev_cnt = 0;
+  	for (Map.Entry<Object,List<Object>> e : entrySet())
+  	{
+  		ev_cnt += e.getValue().size();
+  	}
+  	return ev_cnt;
+  }
 
   public void clear()
   {

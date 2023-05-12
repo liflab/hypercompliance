@@ -47,7 +47,8 @@ import hypercompliancelab.simple.SameNumberDAggregation;
 import hypercompliancelab.simple.SameNumberDQuantify;
 import hypercompliancelab.simple.SimpleSource;
 import hypercompliancelab.xes.LiveInstances;
-import hypercompliancelab.xes.bpi2011.Bpi2011Source;
+import hypercompliancelab.xes.bpi2011.HospitalSource;
+import hypercompliancelab.xes.bpi2011.WaboSource;
 
 public class MainLab extends Laboratory
 {
@@ -110,7 +111,7 @@ public class MainLab extends Laboratory
 		{
 		  // Experiments for a set of pre-recorded XES logs from external sources
 		  Region xes_reg = product(
-		      extension(SourceProvider.SCENARIO, Bpi2011Source.NAME),
+		      extension(SourceProvider.SCENARIO, WaboSource.NAME, HospitalSource.NAME),
 		      extension(HyperqueryProvider.QUERY,
 							LiveInstances.NAME, hypercompliancelab.xes.AverageLength.NAME)
 		      );

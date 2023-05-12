@@ -30,7 +30,8 @@ import hypercompliancelab.simple.SameNumberDQuantify;
 import hypercompliancelab.simple.SimpleSource;
 import hypercompliancelab.xes.LazyInterleavedSource;
 import hypercompliancelab.xes.LiveInstances;
-import hypercompliancelab.xes.bpi2011.Bpi2011Source;
+import hypercompliancelab.xes.bpi2011.HospitalSource;
+import hypercompliancelab.xes.bpi2011.WaboSource;
 
 public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExperiment> implements Seedable
 {
@@ -65,8 +66,10 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		case SimpleSource.NAME:
 			source = new SimpleSource(10000, m_seed);
 			break;
-		case Bpi2011Source.NAME:
-			source = new Bpi2011Source(m_fs);
+		case WaboSource.NAME:
+			source = new WaboSource(m_fs);
+		case HospitalSource.NAME:
+			source = new HospitalSource(m_fs);
 			break;
 		}
 		// Select the appropriate hyperquery

@@ -34,10 +34,12 @@ import hypercompliancelab.xes.LazyInterleavedSource;
 
 /**
  * A source of {@link LogUpdate} events that takes its data from the
+ * <i>WABO</i> data set (DOI:
+ * {@code 10.4121/uuid:26aba40d-8b2d-435b-b5af-6d4bfbd7a270}).
+ * 
  * @author Sylvain Hallé
- *
  */
-public class Bpi2011Source extends LazyInterleavedSource
+public class WaboSource extends LazyInterleavedSource
 {
 	/**
 	 * The name of this source, which also gives the name to the corresponding
@@ -46,12 +48,27 @@ public class Bpi2011Source extends LazyInterleavedSource
   /*@ non_null @*/ public static final transient String NAME = "WABO";
   
   /**
+   * The URL pointing to the zipped XES file.
+   */
+  protected static final transient String s_xesUrl = "https://data.4tu.nl/file/a928c371-d8e8-4c14-95db-2c28078085b5/117823ec-6f79-4362-8ca6-8a190c8421a2";
+  
+  /**
+   * The name of the XES file.
+   */
+  protected static final transient String s_xesFilename = "CoSeLoG WABO 1.gz";
+  
+  /**
+   * The name of the zipped XES file.
+   */
+  protected static final transient String s_gzFilename = "CoSeLoG WABO 1.xes.gz";
+  
+  /**
    * Creates a new instance of the source.
    * @param fs The file system where the XES files are downloaded to.
    */
-  public Bpi2011Source(LabFileSystem fs)
+  public WaboSource(LabFileSystem fs)
   {
-    super("time:timestamp", "concept:name", fs, "CoSeLoG WABO 1.xes");
+    super("time:timestamp", "concept:name", fs, s_xesFilename);
   }
   
   @Override
@@ -70,26 +87,26 @@ public class Bpi2011Source extends LazyInterleavedSource
 	{
 		return new FunctionTree(Equals.instance, new Constant("END"), new FunctionTree(new FetchAttribute("action_code"), StreamVariable.X));
 	}
-
+	
 	@Override
 	public void fulfillPrerequisites() throws FileSystemException
 	{
 		// Download and unzip the XES file retrieved from the repository
-		m_fs.download("https://data.4tu.nl/file/a928c371-d8e8-4c14-95db-2c28078085b5/117823ec-6f79-4362-8ca6-8a190c8421a2", "CoSeLoG WABO 1.xes.gz");
-		m_fs.gunzip("CoSeLoG WABO 1.xes.gz", "CoSeLoG WABO 1.xes");
-		m_fs.delete("CoSeLoG WABO 1.xes.gz");
+		m_fs.download(s_xesUrl, s_gzFilename);
+		m_fs.gunzip(s_gzFilename, s_xesFilename);
+		m_fs.delete(s_gzFilename);
 	}
 	
 	@Override
 	public void clean() throws FileSystemException
 	{
-		if (m_fs.isFile("CoSeLoG WABO 1.xes.gz"))
+		if (m_fs.isFile(s_gzFilename))
 		{
-			m_fs.delete("CoSeLoG WABO 1.xes.gz");
+			m_fs.delete(s_gzFilename);
 		}
-		if (m_fs.isFile("CoSeLoG WABO 1.xes"))
+		if (m_fs.isFile(s_xesFilename))
 		{
-			m_fs.delete("CoSeLoG WABO 1.xes");
+			m_fs.delete(s_xesFilename);
 		}
 	}
 }

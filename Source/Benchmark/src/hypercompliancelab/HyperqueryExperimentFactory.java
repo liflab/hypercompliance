@@ -29,7 +29,6 @@ import hypercompliancelab.simple.SameNumberDAggregation;
 import hypercompliancelab.simple.SameNumberDQuantify;
 import hypercompliancelab.simple.SimpleSource;
 import hypercompliancelab.xes.LazyInterleavedSource;
-import hypercompliancelab.xes.LiveInstances;
 import hypercompliancelab.xes.bpi2011.HospitalSource;
 import hypercompliancelab.xes.bpi2011.WaboSource;
 
@@ -68,6 +67,7 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 			break;
 		case WaboSource.NAME:
 			source = new WaboSource(m_fs);
+			break;
 		case HospitalSource.NAME:
 			source = new HospitalSource(m_fs);
 			break;
@@ -75,6 +75,7 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		// Select the appropriate hyperquery
 		switch (hyperquery)
 		{
+		// We deliberately keep fully qualified class names to avoid confusion
 		case hypercompliancelab.simple.AverageLength.NAME:
 			query = new hypercompliancelab.simple.AverageLength();
 			break;
@@ -90,8 +91,11 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		case hypercompliancelab.xes.AverageLength.NAME:
 			query = new hypercompliancelab.xes.AverageLength(((LazyInterleavedSource) source).getEndCondition());
 			break;
-		case LiveInstances.NAME:
-			query = new LiveInstances(((LazyInterleavedSource) source).getEndCondition());
+		case hypercompliancelab.xes.LiveInstances.NAME:
+			query = new hypercompliancelab.xes.LiveInstances(((LazyInterleavedSource) source).getEndCondition());
+			break;
+		case hypercompliancelab.xes.SameNext.NAME:
+			query = new hypercompliancelab.xes.SameNext(((LazyInterleavedSource) source).getAction());
 			break;
 		}
 		if (source == null || query == null)

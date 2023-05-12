@@ -76,7 +76,7 @@ public class HospitalSource extends LazyInterleavedSource
   {
   	// Add the END event at the end of each trace in the log
   	Tuple end_event = new TupleMap();
-		end_event.put("action_code", "END");
+		end_event.put("concept:name", "END");
 		end_event.put("time:timestamp", Long.MAX_VALUE);
 		log.appendToAll(Arrays.asList(end_event));
 		super.populateFromLog(log);
@@ -85,7 +85,13 @@ public class HospitalSource extends LazyInterleavedSource
 	@Override
 	public Function getEndCondition()
 	{
-		return new FunctionTree(Equals.instance, new Constant("END"), new FunctionTree(new FetchAttribute("action_code"), StreamVariable.X));
+		return new FunctionTree(Equals.instance, new Constant("END"), new FunctionTree(new FetchAttribute("concept:name"), StreamVariable.X));
+	}
+	
+	@Override
+	public Function getAction()
+	{
+		return new FetchAttribute("concept:name");
 	}
 
 	@Override

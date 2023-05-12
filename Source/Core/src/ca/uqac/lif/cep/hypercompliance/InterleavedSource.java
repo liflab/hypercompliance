@@ -77,6 +77,7 @@ public class InterleavedSource extends LogSource
     }
     Collections.sort(updates); // Order by timestamp
     m_events.addAll(updates);
+    System.out.println(m_events.size());
   }
   
   /**

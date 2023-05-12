@@ -34,6 +34,7 @@ import static hypercompliancelab.HyperqueryExperiment.TOTAL_EVENTS;
 
 import ca.uqac.lif.fs.FileSystemException;
 import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.experiment.ExperimentGroup;
 import ca.uqac.lif.labpal.plot.Plot;
 import ca.uqac.lif.labpal.region.Region;
 import ca.uqac.lif.labpal.util.CliParser;
@@ -87,6 +88,8 @@ public class MainLab extends Laboratory
 		
 		{
 			// Experiments for the simple scenario (auto-generated)
+			ExperimentGroup g = new ExperimentGroup("Simple scenario", "Hyperqueries evaluated on an abstract auto-generated log.");
+			add(g);
 			Region simple_reg = product(
 					extension(SourceProvider.SCENARIO, SimpleSource.NAME),
 					extension(HyperqueryProvider.QUERY,
@@ -106,17 +109,25 @@ public class MainLab extends Laboratory
 										.setTitle("Progressive memory consumption (simple scenario)"),
 									new ExpandAsColumns(HyperqueryProvider.QUERY, MEMORY))),
 					new GnuplotScatterplot().setCaption(Axis.Y, "Memory (B)")));
+			for (Region e_r : simple_reg.all(SourceProvider.SCENARIO, HyperqueryProvider.QUERY))
+		  	g.add(factory.get(e_r));
 		}
 		
 		{
 		  // Experiments for a set of pre-recorded XES logs from external sources
+			ExperimentGroup g = new ExperimentGroup("Real-world logs", "Hyperqueries evaluated on a set of XES files retrieved from online repositories.");
+			add(g);
 		  Region xes_reg = product(
 		      extension(SourceProvider.SCENARIO, WaboSource.NAME, HospitalSource.NAME),
 		      extension(HyperqueryProvider.QUERY,
-							LiveInstances.NAME, hypercompliancelab.xes.AverageLength.NAME)
+							LiveInstances.NAME,
+							hypercompliancelab.xes.AverageLength.NAME,
+							hypercompliancelab.xes.SameNext.NAME)
 		      );
 		  add(table(SourceProvider.SCENARIO, TOTAL_EVENTS, HyperqueryProvider.QUERY, THROUGHPUT, MAX_MEMORY).add(factory, xes_reg)
 		  		.setTitle("Aggregate statistics for various real-world logs").setNickname("tAggregate"));
+		  for (Region e_r : xes_reg.all(SourceProvider.SCENARIO, HyperqueryProvider.QUERY))
+		  	g.add(factory.get(e_r));
 		}
 	}
 	

@@ -55,7 +55,7 @@ public class WaboSource extends LazyInterleavedSource
   /**
    * The name of the XES file.
    */
-  protected static final transient String s_xesFilename = "CoSeLoG WABO 1.gz";
+  protected static final transient String s_xesFilename = "CoSeLoG WABO 1.xes";
   
   /**
    * The name of the zipped XES file.
@@ -86,6 +86,12 @@ public class WaboSource extends LazyInterleavedSource
 	public Function getEndCondition()
 	{
 		return new FunctionTree(Equals.instance, new Constant("END"), new FunctionTree(new FetchAttribute("action_code"), StreamVariable.X));
+	}
+	
+	@Override
+	public Function getAction()
+	{
+		return new FetchAttribute("action_code");
 	}
 	
 	@Override

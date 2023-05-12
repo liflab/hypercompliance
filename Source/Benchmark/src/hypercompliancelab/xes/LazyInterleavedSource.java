@@ -136,4 +136,10 @@ public abstract class LazyInterleavedSource extends InterleavedSource implements
    * @return The function
    */
   /*@ non_null @*/ public abstract Function getEndCondition();
+  
+  /**
+   * Gets the function that extracts the "action" of each event.
+   * @return The function
+   */
+  /*@ non_null @*/ public abstract Function getAction();
 }

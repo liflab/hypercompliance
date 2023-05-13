@@ -34,8 +34,16 @@ import ca.uqac.lif.cep.util.Bags;
 import ca.uqac.lif.cep.util.Booleans;
 import ca.uqac.lif.cep.util.Equals;
 import ca.uqac.lif.cep.util.NthElement;
+import hypercompliancelab.Describable;
 
-public class SameNext extends GroupProcessor
+/**
+ * Finds the activities in the log that are always followed by the same
+ * other activity in all instances.
+ * 
+ * @author Sylvain Hallé
+ *
+ */
+public class SameNext extends GroupProcessor implements Describable
 {
 	/**
 	 * The name of this hyperquery.
@@ -71,5 +79,11 @@ public class SameNext extends GroupProcessor
 		}});
 		connect(slice1, slice2);
 		addProcessors(slice1, slice2).associateInput(slice1).associateOutput(slice2);
+	}
+
+	@Override
+	public String getDescription()
+	{
+		return "Finds the activities in the log that are always followed by the same other activity in all instances";
 	}
 }

@@ -30,12 +30,13 @@ import ca.uqac.lif.cep.hypercompliance.Aggregate;
 import ca.uqac.lif.cep.tmf.DetectEnd;
 import ca.uqac.lif.cep.tmf.Fork;
 import ca.uqac.lif.cep.util.Numbers;
+import hypercompliancelab.Describable;
 
 /**
  * Evaluates the average length of a trace in a log.
  * @author Sylvain Hallé
  */
-public class AverageLength extends Aggregate
+public class AverageLength extends Aggregate implements Describable
 {
 	/**
 	 * The name of this hyperquery.
@@ -78,5 +79,11 @@ public class AverageLength extends Aggregate
 			associateInput(0, f, 0);
 			associateOutput(0, div, 0);
 		}};
+	}
+
+	@Override
+	public String getDescription()
+	{
+		return "Evaluates the average length of a trace in a log";
 	}
 }

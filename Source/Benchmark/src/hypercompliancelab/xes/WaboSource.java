@@ -15,7 +15,7 @@
   You should have received a copy of the GNU Lesser General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package hypercompliancelab.xes.bpi2011;
+package hypercompliancelab.xes;
 
 import java.util.Arrays;
 
@@ -29,44 +29,45 @@ import ca.uqac.lif.cep.tuples.Tuple;
 import ca.uqac.lif.cep.tuples.TupleMap;
 import ca.uqac.lif.cep.util.Equals;
 import ca.uqac.lif.fs.FileSystemException;
+import hypercompliancelab.Describable;
+import hypercompliancelab.FetchAttributeOr;
 import hypercompliancelab.LabFileSystem;
-import hypercompliancelab.xes.LazyInterleavedSource;
 
 /**
  * A source of {@link LogUpdate} events that takes its data from the
- * <i>Hospital</i> data set (DOI:
- * {@code 10.4121/uuid:d9769f3d-0ab0-4fb8-803b-0d1120ffcf54}).
+ * <i>WABO</i> data set (DOI:
+ * {@code 10.4121/uuid:26aba40d-8b2d-435b-b5af-6d4bfbd7a270}).
+ * 
  * @author Sylvain Hallé
- *
  */
-public class HospitalSource extends LazyInterleavedSource
+public class WaboSource extends LazyInterleavedSource implements Describable
 {
 	/**
 	 * The name of this source, which also gives the name to the corresponding
 	 * scenario.
 	 */
-  /*@ non_null @*/ public static final transient String NAME = "Hospital";
+  /*@ non_null @*/ public static final transient String NAME = "WABO";
   
   /**
    * The URL pointing to the zipped XES file.
    */
-  protected static final transient String s_xesUrl = "https://data.4tu.nl/file/5ea5bb88-feaa-4e6f-a743-6460a755e05b/6f9640f9-0f1e-44d2-9495-ef9d1bd82218";
+  protected static final transient String s_xesUrl = "https://data.4tu.nl/file/a928c371-d8e8-4c14-95db-2c28078085b5/117823ec-6f79-4362-8ca6-8a190c8421a2";
   
   /**
    * The name of the XES file.
    */
-  protected static final transient String s_xesFilename = "Hospital_log.xes";
+  protected static final transient String s_xesFilename = "CoSeLoG WABO 1.xes";
   
   /**
    * The name of the zipped XES file.
    */
-  protected static final transient String s_gzFilename = "Hospital_log.xes.gz";
+  protected static final transient String s_gzFilename = "CoSeLoG WABO 1.xes.gz";
   
   /**
    * Creates a new instance of the source.
    * @param fs The file system where the XES files are downloaded to.
    */
-  public HospitalSource(LabFileSystem fs)
+  public WaboSource(LabFileSystem fs)
   {
     super("time:timestamp", "concept:name", fs, s_xesFilename);
   }
@@ -76,7 +77,7 @@ public class HospitalSource extends LazyInterleavedSource
   {
   	// Add the END event at the end of each trace in the log
   	Tuple end_event = new TupleMap();
-		end_event.put("concept:name", "END");
+		end_event.put("action_code", "END");
 		end_event.put("time:timestamp", Long.MAX_VALUE);
 		log.appendToAll(Arrays.asList(end_event));
 		super.populateFromLog(log);
@@ -85,15 +86,21 @@ public class HospitalSource extends LazyInterleavedSource
 	@Override
 	public Function getEndCondition()
 	{
-		return new FunctionTree(Equals.instance, new Constant("END"), new FunctionTree(new FetchAttribute("concept:name"), StreamVariable.X));
+		return new FunctionTree(Equals.instance, new Constant("END"), new FunctionTree(new FetchAttribute("action_code"), StreamVariable.X));
 	}
 	
 	@Override
 	public Function getAction()
 	{
-		return new FetchAttribute("concept:name");
+		return new FetchAttributeOr("action_code", "");
 	}
-
+	
+	@Override
+	public Function getTimestamp()
+	{
+		return new FetchAttribute("time:timestamp");
+	}
+	
 	@Override
 	public void fulfillPrerequisites() throws FileSystemException
 	{
@@ -114,5 +121,11 @@ public class HospitalSource extends LazyInterleavedSource
 		{
 			m_fs.delete(s_xesFilename);
 		}
+	}
+	
+	@Override
+	public String getDescription()
+	{
+		return "A log of cases for an environmental permit application process for five municipalities in the Netherlands";
 	}
 }

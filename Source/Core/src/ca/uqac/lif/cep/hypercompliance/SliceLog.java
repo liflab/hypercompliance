@@ -67,7 +67,9 @@ public class SliceLog extends SynchronousProcessor
 	 * Determines what traces should be considered when building the output
 	 * map.
 	 */
-	protected final Choice m_choice;
+	/*@ non_null @*/ protected final Choice m_choice;
+	
+	/*@ null @*/ protected Object m_lastOutput;
 
 	/**
 	 * Creates a new slice log processor.
@@ -89,6 +91,7 @@ public class SliceLog extends SynchronousProcessor
 		super(1, 1);
 		m_sliceProcessor = p;
 		m_slices = new TreeMap<Object,SlicePushUnit>();
+		m_lastOutput = null;
 		m_choice = c;
 	}
 
@@ -103,7 +106,18 @@ public class SliceLog extends SynchronousProcessor
 		}
 		{
 			SlicePushUnit spu = m_slices.get(trace_id);
+			boolean active_before = spu.isActive();
 			spu.push(upd.getEvent());
+			boolean active_after = spu.isActive();
+			if (m_choice == Choice.INACTIVE && !(active_before == true && active_after == false))
+			{
+				// No point in recalculating, just output the last map
+				if (m_lastOutput != null)
+				{
+					outputs.add(new Object[] {m_lastOutput});
+				}
+				return true;
+			}
 		}
 		TreeMap<Object,Object> out_map = new TreeMap<Object,Object>();
 		Iterator<Map.Entry<Object,SlicePushUnit>> it = m_slices.entrySet().iterator();
@@ -130,6 +144,7 @@ public class SliceLog extends SynchronousProcessor
 		if (o != null)
 		{
 			outputs.add(new Object[] {o});
+			m_lastOutput = o;
 		}
 		return true;
 	}

@@ -142,4 +142,10 @@ public abstract class LazyInterleavedSource extends InterleavedSource implements
    * @return The function
    */
   /*@ non_null @*/ public abstract Function getAction();
+  
+  /**
+   * Gets the function that extracts the "ttimestamp" of each event.
+   * @return The function
+   */
+  /*@ non_null @*/ public abstract Function getTimestamp();
 }

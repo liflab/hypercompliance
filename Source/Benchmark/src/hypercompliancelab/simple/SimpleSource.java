@@ -27,6 +27,7 @@ import ca.uqac.lif.synthia.sequence.MarkovChain;
 import ca.uqac.lif.synthia.util.Constant;
 import ca.uqac.lif.synthia.util.Tick;
 import hypercompliancelab.CasePicker;
+import hypercompliancelab.Describable;
 import hypercompliancelab.PickerSource;
 
 /**
@@ -40,7 +41,7 @@ import hypercompliancelab.PickerSource;
  *  
  * @author Sylvain Hallé
  */
-public class SimpleSource extends PickerSource
+public class SimpleSource extends PickerSource implements Describable
 {
 	public static final String NAME = "Simple";
 
@@ -109,4 +110,10 @@ public class SimpleSource extends PickerSource
 		}
 	}
 
+	@Override
+	public String getDescription()
+	{
+		return "A simple source producing sequences of abstract events labelled \"a\", \"b\",\n"
+				+ "\"c\" and \"d\" according to random walks in a Markov chain.";
+	}
 }

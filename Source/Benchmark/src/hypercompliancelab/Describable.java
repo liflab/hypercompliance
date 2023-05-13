@@ -15,16 +15,9 @@
   You should have received a copy of the GNU Lesser General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package hypercompliancelab.xes;
+package hypercompliancelab;
 
-import ca.uqac.lif.cep.GroupProcessor;
-import ca.uqac.lif.cep.hypercompliance.SliceLog;
-import ca.uqac.lif.cep.tmf.Passthrough;
-
-public class LastEventOfEach extends SliceLog
+public interface Describable
 {
-	public LastEventOfEach()
-	{
-		super(new Passthrough(1), Choice.ALL);
-	}
+	public String getDescription();
 }

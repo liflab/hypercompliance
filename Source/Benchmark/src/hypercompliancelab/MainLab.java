@@ -23,7 +23,6 @@ import static ca.uqac.lif.labpal.region.ExtensionDomain.extension;
 import static ca.uqac.lif.labpal.region.ProductRegion.product;
 import static ca.uqac.lif.labpal.table.ExperimentTable.table;
 import static ca.uqac.lif.labpal.table.TransformedTable.transform;
-import static ca.uqac.lif.labpal.util.PermutationIterator.permute;
 
 import static hypercompliancelab.HyperqueryExperiment.EVENTS;
 import static hypercompliancelab.HyperqueryExperiment.MAX_MEMORY;
@@ -33,6 +32,8 @@ import static hypercompliancelab.HyperqueryExperiment.TIME;
 import static hypercompliancelab.HyperqueryExperiment.TOTAL_EVENTS;
 
 import ca.uqac.lif.fs.FileSystemException;
+import ca.uqac.lif.fs.FileUtils;
+import ca.uqac.lif.fs.JarFile;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.experiment.ExperimentGroup;
 import ca.uqac.lif.labpal.plot.Plot;
@@ -47,15 +48,21 @@ import hypercompliancelab.simple.NumberRunning;
 import hypercompliancelab.simple.SameNumberDAggregation;
 import hypercompliancelab.simple.SameNumberDQuantify;
 import hypercompliancelab.simple.SimpleSource;
+import hypercompliancelab.xes.HospitalSource;
 import hypercompliancelab.xes.LiveInstances;
-import hypercompliancelab.xes.bpi2011.HospitalSource;
-import hypercompliancelab.xes.bpi2011.WaboSource;
+import hypercompliancelab.xes.LoanApplicationSource;
+import hypercompliancelab.xes.WaboSource;
 
 public class MainLab extends Laboratory
 {
 	@Override
 	public void setup()
 	{
+		// Lab metadata
+		setName("BeepBeep Hypercompliance Benchmark");
+		setAuthor("Sylvain Hallé, Chukri Soueidi");
+		writeDescription("description.html");
+		
 		// The local folder where downloaded files are stored
 		String data_dir = "data/";
 		
@@ -118,14 +125,28 @@ public class MainLab extends Laboratory
 			ExperimentGroup g = new ExperimentGroup("Real-world logs", "Hyperqueries evaluated on a set of XES files retrieved from online repositories.");
 			add(g);
 		  Region xes_reg = product(
-		      extension(SourceProvider.SCENARIO, WaboSource.NAME, HospitalSource.NAME),
+		      extension(SourceProvider.SCENARIO, WaboSource.NAME, HospitalSource.NAME, LoanApplicationSource.NAME),
 		      extension(HyperqueryProvider.QUERY,
-							LiveInstances.NAME,
 							hypercompliancelab.xes.AverageLength.NAME,
+							hypercompliancelab.xes.JaccardLog.NAME,
+							LiveInstances.NAME,
+							hypercompliancelab.xes.MeanInterval.NAME,
 							hypercompliancelab.xes.SameNext.NAME)
 		      );
 		  add(table(SourceProvider.SCENARIO, TOTAL_EVENTS, HyperqueryProvider.QUERY, THROUGHPUT, MAX_MEMORY).add(factory, xes_reg)
 		  		.setTitle("Aggregate statistics for various real-world logs").setNickname("tAggregate"));
+		  for (Region e_r : xes_reg.all(SourceProvider.SCENARIO))
+		  {
+		  	String scenario = e_r.asPoint().getString(SourceProvider.SCENARIO);
+		  	add(new Plot(
+		  			add(transform(table(HyperqueryProvider.QUERY, EVENTS, TIME).add(factory, e_r), new ExpandAsColumns(HyperqueryProvider.QUERY, TIME))
+		  					.setTitle("Running time for hyperqueries of scenario " + scenario).setNickname("tTime" + scenario)),
+		  			new GnuplotScatterplot().setCaption(Axis.Y, "Time (ms)")));
+		  	add(new Plot(
+		  			add(transform(table(HyperqueryProvider.QUERY, EVENTS, MEMORY).add(factory, e_r), new ExpandAsColumns(HyperqueryProvider.QUERY, MEMORY))
+		  					.setTitle("Memory usage for hyperqueries of scenario " + scenario).setNickname("tMemory" + scenario)),
+		  			new GnuplotScatterplot().setCaption(Axis.Y, "Memory (B)")));
+		  }
 		  for (Region e_r : xes_reg.all(SourceProvider.SCENARIO, HyperqueryProvider.QUERY))
 		  	g.add(factory.get(e_r));
 		}
@@ -135,6 +156,20 @@ public class MainLab extends Laboratory
 	public void setupCli(CliParser parser)
 	{
 		parser.addArgument(new Argument().withLongName("datadir").withArgument("dir").withDescription("Store downloaded data files into local folder dir"));
+	}
+	
+	public void writeDescription(String path)
+	{
+		try
+		{
+			JarFile jf = new JarFile(MainLab.class).open();
+			setDescription(FileUtils.readStringFrom(jf, path));
+			jf.close();
+		}
+		catch (FileSystemException e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	public static void main(String[] args)

@@ -28,9 +28,10 @@ import hypercompliancelab.simple.NumberRunning;
 import hypercompliancelab.simple.SameNumberDAggregation;
 import hypercompliancelab.simple.SameNumberDQuantify;
 import hypercompliancelab.simple.SimpleSource;
+import hypercompliancelab.xes.HospitalSource;
 import hypercompliancelab.xes.LazyInterleavedSource;
-import hypercompliancelab.xes.bpi2011.HospitalSource;
-import hypercompliancelab.xes.bpi2011.WaboSource;
+import hypercompliancelab.xes.LoanApplicationSource;
+import hypercompliancelab.xes.WaboSource;
 
 public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExperiment> implements Seedable
 {
@@ -71,6 +72,9 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		case HospitalSource.NAME:
 			source = new HospitalSource(m_fs);
 			break;
+		case LoanApplicationSource.NAME:
+			source = new LoanApplicationSource(m_fs);
+			break;
 		}
 		// Select the appropriate hyperquery
 		switch (hyperquery)
@@ -91,8 +95,14 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		case hypercompliancelab.xes.AverageLength.NAME:
 			query = new hypercompliancelab.xes.AverageLength(((LazyInterleavedSource) source).getEndCondition());
 			break;
+		case hypercompliancelab.xes.JaccardLog.NAME:
+			query = new hypercompliancelab.xes.JaccardLog(((LazyInterleavedSource) source).getEndCondition());
+			break;
 		case hypercompliancelab.xes.LiveInstances.NAME:
 			query = new hypercompliancelab.xes.LiveInstances(((LazyInterleavedSource) source).getEndCondition());
+			break;
+		case hypercompliancelab.xes.MeanInterval.NAME:
+			query = new hypercompliancelab.xes.MeanInterval(((LazyInterleavedSource) source).getTimestamp());
 			break;
 		case hypercompliancelab.xes.SameNext.NAME:
 			query = new hypercompliancelab.xes.SameNext(((LazyInterleavedSource) source).getAction());
@@ -103,6 +113,14 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 			return null;
 		}
 		HyperqueryExperiment he = new HyperqueryExperiment(source, query);
+		if (query instanceof Describable)
+		{
+			he.setQueryDescription(((Describable) query).getDescription());
+		}
+		if (source instanceof Describable)
+		{
+			he.setScenarioDescription(((Describable) source).getDescription());
+		}
 		he.writeInput(SourceProvider.SCENARIO, scenario);
 		he.writeInput(HyperqueryProvider.QUERY, hyperquery);
 		return he;

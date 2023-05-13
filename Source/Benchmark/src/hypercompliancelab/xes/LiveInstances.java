@@ -26,9 +26,14 @@ import ca.uqac.lif.cep.functions.TurnInto;
 import ca.uqac.lif.cep.hypercompliance.Aggregate;
 import ca.uqac.lif.cep.tmf.DetectEnd;
 import ca.uqac.lif.cep.util.Numbers;
+import hypercompliancelab.Describable;
 
-
-public class LiveInstances extends Aggregate
+/**
+ * Counts the number of process instances that are ongoing concurrently at any
+ * time point. 
+ * @author Sylvain Hallé
+ */
+public class LiveInstances extends Aggregate implements Describable
 {
 	/**
 	 * The name of this hyperquery.
@@ -49,4 +54,10 @@ public class LiveInstances extends Aggregate
       addProcessors(end, one).associateInput(end).associateOutput(one);
     }};
   }
+
+	@Override
+	public String getDescription()
+	{
+		return "Counts the number of process instances that are ongoing concurrently at any time point";
+	}
 }

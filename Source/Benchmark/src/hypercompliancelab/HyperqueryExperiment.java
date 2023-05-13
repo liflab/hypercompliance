@@ -22,7 +22,7 @@ import ca.uqac.lif.cep.Connector;
 import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.Pullable;
 import ca.uqac.lif.cep.Pushable;
-import ca.uqac.lif.cep.tmf.BlackHole;
+import ca.uqac.lif.cep.tmf.SinkLast;
 import ca.uqac.lif.fs.FileSystemException;
 import ca.uqac.lif.json.JsonList;
 import ca.uqac.lif.labpal.experiment.Experiment;
@@ -50,7 +50,14 @@ public class HyperqueryExperiment extends Experiment
 	
 	public static final transient String THROUGHPUT = "Throughput (Hz)";
 	
-	protected static int s_interval = 1000;
+	public static final transient String RESULT = "Result";
+	
+	/**1
+	 * The maximum duration allowed, in seconds.
+	 */
+	protected static final int s_timeout = 75;
+	
+	protected static int s_interval = 20000;
 	
 	/**
 	 * The length of the source. Used by the experiment to calculate its
@@ -69,9 +76,14 @@ public class HyperqueryExperiment extends Experiment
 	/*@ non_null @*/ protected Processor m_policy;
 	
 	/**
-	 * The file system used to probe whether a trace file exists.
+	 * The description of the scenario for this experiment.
 	 */
-	protected LabFileSystem m_fs;
+	/*@ null @*/ protected String m_scenarioDescription;
+	
+	/**
+	 * The description of the hyperquery evaluated in this experiment.
+	 */
+	/*@ null @*/ protected String m_queryDescription;
 	
 	HyperqueryExperiment(Processor source, Processor policy)
 	{
@@ -85,12 +97,52 @@ public class HyperqueryExperiment extends Experiment
 		describe(TOTAL_TIME, "The total time taken to evaluate the policy on the log", Time.DIMENSION);
 		describe(TOTAL_EVENTS, "The total number of events in the input trace");
 		describe(THROUGHPUT, "The number of events per second processed by the hyperpolicy", Frequency.DIMENSION);
-		setTimeout(new Second(30));
+		describe(RESULT, "The last event produced by the hyperquery");
+		setTimeout(new Second(s_timeout));
+		m_scenarioDescription = null;
+		m_queryDescription = null;
 	}
 	
 	HyperqueryExperiment()
 	{
 		this(null, null);
+	}
+	
+	/**
+	 * Sets the  of the scenario for this experiment. This is only used to
+	 * display a message in the web interface.
+	 * 
+	 * @param description The description
+	 */
+	public void setScenarioDescription(String description)
+	{
+		m_scenarioDescription = description;
+	}
+	
+	/**
+	 * Sets the  of the hyperquery evaluated in this experiment. This is only
+	 * used to display a message in the web interface.
+	 * 
+	 * @param description The description
+	 */
+	public void setQueryDescription(String description)
+	{
+		m_queryDescription = description;
+	}
+	
+	@Override
+	public String getDescription()
+	{
+		StringBuilder out = new StringBuilder();
+		out.append("<p>Evaluates a hyperquery on a stream of log updates.</p>\n");
+		if (m_scenarioDescription != null && m_queryDescription != null)
+		{
+			out.append("<ul>\n");
+			out.append("<li>Scenario: ").append(m_scenarioDescription).append("</li>\n");
+			out.append("<li>Hyperquery: ").append(m_queryDescription).append("</li>\n");
+			out.append("</ul>\n");
+		}
+		return out.toString();
 	}
 	
 	public void setSourceLength(int length)
@@ -101,7 +153,8 @@ public class HyperqueryExperiment extends Experiment
 	@Override
 	public void execute() throws ExperimentException
 	{
-		Connector.connect(m_policy, new BlackHole());
+		SinkLast last = new SinkLast();
+		Connector.connect(m_policy, last);
 		Pullable pl = m_source.getPullableOutput();
 		Pushable ph = m_policy.getPushableInput();
 		JsonList l_events = new JsonList();
@@ -117,7 +170,6 @@ public class HyperqueryExperiment extends Experiment
 		printer.ignoreAccessChecks(true);
 		long mem = getMemory(printer);
 		l_mem.add(mem);
-		max_mem = Math.max(mem, max_mem);
 		// Populate source
 		m_source.start();
 		// Get source length
@@ -138,6 +190,7 @@ public class HyperqueryExperiment extends Experiment
 				l_events.add(ev_cnt);
 				l_time.add(Stopwatch.lap(this));
 				l_mem.add(getMemory(printer));
+				max_mem = Math.max(mem, max_mem);
 				if (source_length > 0)
 				{
 					setProgression((float) ev_cnt / (float) source_length);
@@ -145,10 +198,15 @@ public class HyperqueryExperiment extends Experiment
 			}
 		}
 		long duration = Stopwatch.stop(this);
+		Object o_last = last.getLast();
+		if (o_last != null)
+		{
+			writeOutput(RESULT, last.getLast()[0]);
+		}
 		writeOutput(TOTAL_TIME, new Millisecond(duration));
 		writeOutput(TOTAL_EVENTS, ev_cnt);
 		writeOutput(MAX_MEMORY, max_mem);
-		writeOutput(THROUGHPUT, new Hertz(ev_cnt / duration * 1000));
+		writeOutput(THROUGHPUT, new Hertz((float) ev_cnt / (float) duration * 1000f));
 	}
 	
 	@Override

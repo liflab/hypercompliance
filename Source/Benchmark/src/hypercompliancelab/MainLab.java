@@ -128,6 +128,7 @@ public class MainLab extends Laboratory
 		      extension(SourceProvider.SCENARIO, WaboSource.NAME, HospitalSource.NAME, LoanApplicationSource.NAME),
 		      extension(HyperqueryProvider.QUERY,
 							hypercompliancelab.xes.AverageLength.NAME,
+							hypercompliancelab.xes.DirectlyFollows.NAME,
 							hypercompliancelab.xes.JaccardLog.NAME,
 							LiveInstances.NAME,
 							hypercompliancelab.xes.MeanInterval.NAME,

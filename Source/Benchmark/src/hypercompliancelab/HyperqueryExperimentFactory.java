@@ -95,6 +95,9 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		case hypercompliancelab.xes.AverageLength.NAME:
 			query = new hypercompliancelab.xes.AverageLength(((LazyInterleavedSource) source).getEndCondition());
 			break;
+		case hypercompliancelab.xes.DirectlyFollows.NAME:
+			query = new hypercompliancelab.xes.DirectlyFollows(((LazyInterleavedSource) source).getAction());
+			break;
 		case hypercompliancelab.xes.JaccardLog.NAME:
 			query = new hypercompliancelab.xes.JaccardLog(((LazyInterleavedSource) source).getEndCondition());
 			break;

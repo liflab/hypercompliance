@@ -35,6 +35,16 @@ import hypercompliancelab.xes.WaboSource;
 
 public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExperiment> implements Seedable
 {
+	/**
+	 * The name of parameter "Hyperquery".
+	 */
+	public static final String QUERY = "Hyperquery";
+	
+	/**
+	 * The name of parameter "Scenario".
+	 */
+	public static final String SCENARIO = "Scenario";
+	
 	protected int m_seed;
 	
 	protected LabFileSystem m_fs;
@@ -58,8 +68,8 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 	{
 		Processor source = null;
 		Processor query = null;
-		String scenario = (String) p.get(SourceProvider.SCENARIO);
-		String hyperquery = (String) p.get(HyperqueryProvider.QUERY);
+		String scenario = (String) p.get(SCENARIO);
+		String hyperquery = (String) p.get(QUERY);
 		// Select the appropriate source
 		switch (scenario)
 		{
@@ -104,6 +114,9 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		case hypercompliancelab.xes.LiveInstances.NAME:
 			query = new hypercompliancelab.xes.LiveInstances(((LazyInterleavedSource) source).getEndCondition());
 			break;
+		case hypercompliancelab.xes.MaxCurrent.NAME:
+			query = new hypercompliancelab.xes.MaxCurrent(((LazyInterleavedSource) source).getAction(), ((LazyInterleavedSource) source).getEndCondition(), 3);
+			break;
 		case hypercompliancelab.xes.MeanInterval.NAME:
 			query = new hypercompliancelab.xes.MeanInterval(((LazyInterleavedSource) source).getTimestamp());
 			break;
@@ -124,8 +137,8 @@ public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExp
 		{
 			he.setScenarioDescription(((Describable) source).getDescription());
 		}
-		he.writeInput(SourceProvider.SCENARIO, scenario);
-		he.writeInput(HyperqueryProvider.QUERY, hyperquery);
+		he.writeInput(SCENARIO, scenario);
+		he.writeInput(QUERY, hyperquery);
 		return he;
 	}
 

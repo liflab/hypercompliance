@@ -30,6 +30,8 @@ import static hypercompliancelab.HyperqueryExperiment.MEMORY;
 import static hypercompliancelab.HyperqueryExperiment.THROUGHPUT;
 import static hypercompliancelab.HyperqueryExperiment.TIME;
 import static hypercompliancelab.HyperqueryExperiment.TOTAL_EVENTS;
+import static hypercompliancelab.HyperqueryExperimentFactory.QUERY;
+import static hypercompliancelab.HyperqueryExperimentFactory.SCENARIO;
 
 import ca.uqac.lif.fs.FileSystemException;
 import ca.uqac.lif.fs.FileUtils;
@@ -51,6 +53,7 @@ import hypercompliancelab.simple.SimpleSource;
 import hypercompliancelab.xes.HospitalSource;
 import hypercompliancelab.xes.LiveInstances;
 import hypercompliancelab.xes.LoanApplicationSource;
+import hypercompliancelab.xes.MaxCurrent;
 import hypercompliancelab.xes.WaboSource;
 
 public class MainLab extends Laboratory
@@ -98,25 +101,25 @@ public class MainLab extends Laboratory
 			ExperimentGroup g = new ExperimentGroup("Simple scenario", "Hyperqueries evaluated on an abstract auto-generated log.");
 			add(g);
 			Region simple_reg = product(
-					extension(SourceProvider.SCENARIO, SimpleSource.NAME),
-					extension(HyperqueryProvider.QUERY,
+					extension(SCENARIO, SimpleSource.NAME),
+					extension(QUERY,
 							hypercompliancelab.simple.AverageLength.NAME, NumberRunning.NAME, 
 							SameNumberDAggregation.NAME, SameNumberDQuantify.NAME));
 			add(new Plot(
 					add(
 							transform(
-									table(HyperqueryProvider.QUERY, EVENTS, TIME).add(factory, simple_reg)
+									table(QUERY, EVENTS, TIME).add(factory, simple_reg)
 										.setTitle("Progressive elapsed time (simple scenario)"),
-									new ExpandAsColumns(HyperqueryProvider.QUERY, TIME))),
+									new ExpandAsColumns(QUERY, TIME))),
 					new GnuplotScatterplot().setCaption(Axis.Y, "Time (ms)")));
 			add(new Plot(
 					add(
 							transform(
-									table(HyperqueryProvider.QUERY, EVENTS, MEMORY).add(factory, simple_reg)
+									table(QUERY, EVENTS, MEMORY).add(factory, simple_reg)
 										.setTitle("Progressive memory consumption (simple scenario)"),
-									new ExpandAsColumns(HyperqueryProvider.QUERY, MEMORY))),
+									new ExpandAsColumns(QUERY, MEMORY))),
 					new GnuplotScatterplot().setCaption(Axis.Y, "Memory (B)")));
-			for (Region e_r : simple_reg.all(SourceProvider.SCENARIO, HyperqueryProvider.QUERY))
+			for (Region e_r : simple_reg.all(SCENARIO, HyperqueryExperimentFactory.QUERY))
 		  	g.add(factory.get(e_r));
 		}
 		
@@ -125,30 +128,33 @@ public class MainLab extends Laboratory
 			ExperimentGroup g = new ExperimentGroup("Real-world logs", "Hyperqueries evaluated on a set of XES files retrieved from online repositories.");
 			add(g);
 		  Region xes_reg = product(
-		      extension(SourceProvider.SCENARIO, WaboSource.NAME, HospitalSource.NAME, LoanApplicationSource.NAME),
-		      extension(HyperqueryProvider.QUERY,
+		      extension(SCENARIO, WaboSource.NAME, HospitalSource.NAME, LoanApplicationSource.NAME),
+		      extension(QUERY,
 							hypercompliancelab.xes.AverageLength.NAME,
 							hypercompliancelab.xes.DirectlyFollows.NAME,
 							hypercompliancelab.xes.JaccardLog.NAME,
-							LiveInstances.NAME,
+							hypercompliancelab.xes.LiveInstances.NAME,
+							hypercompliancelab.xes.MaxCurrent.NAME,
 							hypercompliancelab.xes.MeanInterval.NAME,
 							hypercompliancelab.xes.SameNext.NAME)
 		      );
-		  add(table(SourceProvider.SCENARIO, TOTAL_EVENTS, HyperqueryProvider.QUERY, THROUGHPUT, MAX_MEMORY).add(factory, xes_reg)
+		  add(table(SCENARIO, TOTAL_EVENTS, QUERY, THROUGHPUT, MAX_MEMORY).add(factory, xes_reg)
 		  		.setTitle("Aggregate statistics for various real-world logs").setNickname("tAggregate"));
-		  for (Region e_r : xes_reg.all(SourceProvider.SCENARIO))
+		  for (Region e_r : xes_reg.all(SCENARIO))
 		  {
-		  	String scenario = e_r.asPoint().getString(SourceProvider.SCENARIO);
+		  	String scenario = e_r.asPoint().getString(SCENARIO);
 		  	add(new Plot(
-		  			add(transform(table(HyperqueryProvider.QUERY, EVENTS, TIME).add(factory, e_r), new ExpandAsColumns(HyperqueryProvider.QUERY, TIME))
-		  					.setTitle("Running time for hyperqueries of scenario " + scenario).setNickname("tTime" + scenario)),
+		  			add(transform(table(QUERY, EVENTS, TIME).add(factory, e_r), new ExpandAsColumns(QUERY, TIME))
+		  					.setTitle("Running time for hyperqueries of scenario " + scenario)
+		  					.setNickname("tTime" + scenario)),
 		  			new GnuplotScatterplot().setCaption(Axis.Y, "Time (ms)")));
 		  	add(new Plot(
-		  			add(transform(table(HyperqueryProvider.QUERY, EVENTS, MEMORY).add(factory, e_r), new ExpandAsColumns(HyperqueryProvider.QUERY, MEMORY))
-		  					.setTitle("Memory usage for hyperqueries of scenario " + scenario).setNickname("tMemory" + scenario)),
+		  			add(transform(table(QUERY, EVENTS, MEMORY).add(factory, e_r), new ExpandAsColumns(QUERY, MEMORY))
+		  					.setTitle("Memory usage for hyperqueries of scenario " + scenario)
+		  					.setNickname("tMemory" + scenario)),
 		  			new GnuplotScatterplot().setCaption(Axis.Y, "Memory (B)")));
 		  }
-		  for (Region e_r : xes_reg.all(SourceProvider.SCENARIO, HyperqueryProvider.QUERY))
+		  for (Region e_r : xes_reg.all(SCENARIO, QUERY))
 		  	g.add(factory.get(e_r));
 		}
 	}

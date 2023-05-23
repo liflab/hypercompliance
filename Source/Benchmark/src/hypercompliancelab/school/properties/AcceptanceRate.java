@@ -33,8 +33,9 @@ import java.util.ArrayList;
 import static ca.uqac.lif.cep.Connector.connect;
 
 /**
- * Example of a hyperquery that evaluates the fraction of all traces
- * in a log that end with an acceptance decision.
+ * A hyperquery that evaluates if the acceptance ratio of a process is above a given threshold.
+ *
+ * author: Sylvain Hallé and Chukri Soueidi
  */
 public class AcceptanceRate extends Aggregate implements Describable {
     /**

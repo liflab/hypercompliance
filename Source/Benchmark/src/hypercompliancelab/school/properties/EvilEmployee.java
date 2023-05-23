@@ -21,7 +21,7 @@ import static ca.uqac.lif.cep.Connector.connect;
 /***
  * This class implements the hyperpolicy that checks whether employees are rejecting all applications.
  *
- * author
+ * @author Sylvain Hallé and Chukri Soueidi
  */
 public class EvilEmployee extends GroupProcessor implements Describable {
 

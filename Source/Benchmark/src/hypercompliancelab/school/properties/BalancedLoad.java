@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import static ca.uqac.lif.cep.Connector.connect;
 
 /***
- * This class implements the hyperpolicy that checks whether employees are rejecting all applications.
+ * This class implements the hyperpolicy that ensures fair distribution of applications among employees.
  *
- * author
+ * author Sylvain Hallé and Chukri Soueidi
  */
 public class BalancedLoad extends GroupProcessor implements Describable {
 

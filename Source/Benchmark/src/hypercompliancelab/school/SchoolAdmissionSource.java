@@ -34,13 +34,17 @@ import hypercompliancelab.xes.LazyInterleavedSource;
 import java.util.Arrays;
 
 /**
- * A source of {@link LogUpdate} events that takes its data from the
- * <i>WABO</i> data set (DOI:
- * {@code 10.4121/uuid:26aba40d-8b2d-435b-b5af-6d4bfbd7a270}).
- *
- * @author Sylvain Hallé
+ * A source of {@link LogUpdate} events that takes its data from the School Admission process. It runs the process a given number of times, and generates a log from the traces it produces.
+
+ * @author Chukri Soueidi
  */
 public class SchoolAdmissionSource extends LazyInterleavedSource implements Describable {
+
+    /**
+     * The number of traces to generate.
+     */
+    public static int NUMBER_OF_TRACES = 1000;
+
     /**
      * The name of this source, which also gives the name to the corresponding
      * scenario.
@@ -145,7 +149,7 @@ public class SchoolAdmissionSource extends LazyInterleavedSource implements Desc
 
             System.out.println("." + m_fs.pwd() + "/" + s_xesFilename);
 
-            SchoolAdmissionProcess.runAndProduceLogs(1000, "." + m_fs.pwd() + "/" + s_xesFilename);
+            SchoolAdmissionProcess.runAndProduceLogs(NUMBER_OF_TRACES, "." + m_fs.pwd() + "/" + s_xesFilename);
         }
     }
 

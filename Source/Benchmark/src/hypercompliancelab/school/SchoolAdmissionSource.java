@@ -128,12 +128,6 @@ public class SchoolAdmissionSource extends LazyInterleavedSource implements Desc
         return new FetchAttribute("timestamp");
     }
 
-    @Override
-    public boolean prerequisitesFulfilled() throws FileSystemException {
-        return false;
-    }
-
-
     /***
      * Runs the process and produces the log file. It is synchronized such that only one thread produces the log file one time only.
      * @throws FileSystemException

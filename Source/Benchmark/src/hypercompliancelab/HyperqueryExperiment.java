@@ -57,7 +57,10 @@ public class HyperqueryExperiment extends Experiment
 	 */
 	protected static final int s_timeout = 75;
 	
-	protected static int s_interval = 20000;
+	/**
+	 * The interval (in number of events) between each measurement.
+	 */
+	protected int m_interval = 20000;
 	
 	/**
 	 * The length of the source. Used by the experiment to calculate its
@@ -85,7 +88,7 @@ public class HyperqueryExperiment extends Experiment
 	 */
 	/*@ null @*/ protected String m_queryDescription;
 	
-	protected HyperqueryExperiment(Processor source, Processor policy)
+	public HyperqueryExperiment(Processor source, Processor policy)
 	{
 		super();
 		m_source = source;
@@ -106,6 +109,16 @@ public class HyperqueryExperiment extends Experiment
 	HyperqueryExperiment()
 	{
 		this(null, null);
+	}
+	
+	/**
+	 * Sets the interval (in number of events) between each time and
+	 * memory measurement in the experiment.
+	 * @param interval The interval
+	 */
+	public void setInterval(int interval)
+	{
+		m_interval = interval;
 	}
 	
 	/**
@@ -185,7 +198,7 @@ public class HyperqueryExperiment extends Experiment
 			ev_cnt++;
 			Object o = pl.pull();
 			ph.push(o);
-			if (ev_cnt % s_interval == 0)
+			if (ev_cnt % m_interval == 0)
 			{
 				l_events.add(ev_cnt);
 				l_time.add(Stopwatch.lap(this));

@@ -13,8 +13,10 @@ import ca.uqac.lif.cep.tmf.Fork;
 import ca.uqac.lif.cep.tmf.Slice;
 import ca.uqac.lif.cep.tuples.FetchAttribute;
 import ca.uqac.lif.cep.util.*;
+import ca.uqac.lif.fs.FileSystemException;
 import hypercompliancelab.Describable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static ca.uqac.lif.cep.Connector.connect;
@@ -38,7 +40,7 @@ public class StaffLoad extends GroupProcessor implements Describable {
     protected static final int MAX_CASES_PER_EMPLOYEE = 3;
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileSystemException, IOException {
         Test.runScenario(new ArrayList<String>() {
             {
                 add("StaffLoad");

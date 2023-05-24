@@ -19,8 +19,10 @@ import ca.uqac.lif.cep.util.Bags;
 import ca.uqac.lif.cep.util.Equals;
 import ca.uqac.lif.cep.util.Numbers;
 import ca.uqac.lif.cep.util.Sets;
+import ca.uqac.lif.fs.FileSystemException;
 import hypercompliancelab.Describable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static ca.uqac.lif.cep.Connector.connect;
@@ -38,7 +40,7 @@ public class ConsistencyCondition extends GroupProcessor implements Describable 
      */
     public static final transient String NAME = "Consistency Condition";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileSystemException, IOException {
         Test.runScenario(new ArrayList<String>() {
             {
                 add("ConsistencyCondition");

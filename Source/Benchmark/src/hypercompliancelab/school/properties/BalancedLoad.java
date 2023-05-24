@@ -8,9 +8,11 @@ import ca.uqac.lif.cep.tmf.DetectEnd;
 import ca.uqac.lif.cep.tmf.Fork;
 import ca.uqac.lif.cep.tuples.FetchAttribute;
 import ca.uqac.lif.cep.util.*;
+import ca.uqac.lif.fs.FileSystemException;
 import hypercompliancelab.Describable;
 import hypercompliancelab.school.properties.helpers.RunningAverage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static ca.uqac.lif.cep.Connector.connect;
@@ -32,7 +34,7 @@ public class BalancedLoad extends GroupProcessor implements Describable {
     public static final double K = 1.5;
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileSystemException, IOException {
         Test.runScenario(new ArrayList<String>() {
             {
                 add("BalancedLoad");

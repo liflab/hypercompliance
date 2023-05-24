@@ -10,7 +10,9 @@ import ca.uqac.lif.cep.tmf.DetectEnd;
 import ca.uqac.lif.cep.tmf.Fork;
 import ca.uqac.lif.cep.tuples.FetchAttribute;
 import ca.uqac.lif.cep.util.*;
+import ca.uqac.lif.fs.FileSystemException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static ca.uqac.lif.cep.Connector.connect;
@@ -25,7 +27,7 @@ import static ca.uqac.lif.cep.Connector.connect;
 @Deprecated
 public class AllEndedChecker {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileSystemException, IOException {
 
         Test.runScenario(new ArrayList<String>() {
             {

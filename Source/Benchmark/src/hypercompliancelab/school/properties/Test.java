@@ -8,11 +8,14 @@ import ca.uqac.lif.cep.hypercompliance.Log;
 import ca.uqac.lif.cep.hypercompliance.LogUpdate;
 import ca.uqac.lif.cep.hypercompliance.XesToLog;
 import ca.uqac.lif.cep.io.Print;
+import ca.uqac.lif.fs.FileSystemException;
+import ca.uqac.lif.fs.HardDisk;
 import hypercompliancelab.school.process.SchoolAdmissionProcess;
 import hypercompliancelab.school.process.logging.LogReader;
 
-
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +23,7 @@ import static ca.uqac.lif.cep.Connector.connect;
 
 public class Test {
 
-    public static void runScenario(List<String> scenarios){
+    public static void runScenario(List<String> scenarios) throws FileSystemException, IOException{
         for (String scenario : scenarios) {
             System.out.println("Checking property: " + scenario);
 
@@ -60,9 +63,12 @@ public class Test {
 
 
             String filePath= "data" + "/" + "School_Admission.xes";
-
-            SchoolAdmissionProcess.runAndProduceLogs(1000, filePath);
-
+            HardDisk hd = new HardDisk("data").open();
+            OutputStream os = hd.writeTo("School_Admission.xes");
+            SchoolAdmissionProcess.runAndProduceLogs(1000, os);
+            os.close();
+            hd.close();
+            
 
             Log log = new LogReader("application_id", filePath).readLog();
             InterleavedSource is = new InterleavedSource(log, "timestamp");
@@ -81,7 +87,7 @@ public class Test {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileSystemException, IOException {
 
         List<String> scenarios = new ArrayList<String>() {{
             add("EvilEmployee"); //Done

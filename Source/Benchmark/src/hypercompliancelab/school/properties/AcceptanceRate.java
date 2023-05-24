@@ -26,8 +26,10 @@ import ca.uqac.lif.cep.tmf.Fork;
 import ca.uqac.lif.cep.tuples.FetchAttribute;
 import ca.uqac.lif.cep.util.Equals;
 import ca.uqac.lif.cep.util.Numbers;
+import ca.uqac.lif.fs.FileSystemException;
 import hypercompliancelab.Describable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static ca.uqac.lif.cep.Connector.connect;
@@ -112,7 +114,7 @@ public class AcceptanceRate extends Aggregate implements Describable {
         return avg;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileSystemException, IOException {
         Test.runScenario(new ArrayList<String>() {
             {
                 add("AcceptanceRate");

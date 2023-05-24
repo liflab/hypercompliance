@@ -23,6 +23,7 @@ import ca.uqac.lif.labpal.experiment.ExperimentFactory;
 import ca.uqac.lif.labpal.region.Point;
 import ca.uqac.lif.synthia.Seedable;
 import hypercompliancelab.Describable;
+import hypercompliancelab.HyperqueryExperiment;
 import hypercompliancelab.LabFileSystem;
 
 import hypercompliancelab.school.properties.*;
@@ -33,7 +34,7 @@ import java.lang.reflect.Constructor;
 import static hypercompliancelab.HyperqueryExperimentFactory.QUERY;
 import static hypercompliancelab.HyperqueryExperimentFactory.SCENARIO;
 
-public class SchoolAdmissionExperimentFactory extends ExperimentFactory<SchoolAdmissionExperiment> implements Seedable {
+public class SchoolAdmissionExperimentFactory extends ExperimentFactory<HyperqueryExperiment> implements Seedable {
     protected int m_seed;
 
     protected LabFileSystem m_fs;
@@ -51,7 +52,7 @@ public class SchoolAdmissionExperimentFactory extends ExperimentFactory<SchoolAd
     }
 
     @Override
-    /*@ pure null @*/ protected SchoolAdmissionExperiment createExperiment(Point p) {
+    /*@ pure null @*/ protected HyperqueryExperiment createExperiment(Point p) {
         Processor source = null;
         Processor query = null;
         String scenario = (String) p.get(SCENARIO);
@@ -91,7 +92,8 @@ public class SchoolAdmissionExperimentFactory extends ExperimentFactory<SchoolAd
         if (source == null || query == null) {
             return null;
         }
-        SchoolAdmissionExperiment he = new SchoolAdmissionExperiment(source, query);
+        HyperqueryExperiment he = new HyperqueryExperiment(source, query);
+        he.setInterval(100);
         if (query instanceof Describable) {
             he.setQueryDescription(((Describable) query).getDescription());
         }
@@ -104,19 +106,19 @@ public class SchoolAdmissionExperimentFactory extends ExperimentFactory<SchoolAd
     }
 
     @Override
-    protected Constructor<? extends SchoolAdmissionExperiment> getPointConstructor(Point p) {
+    protected Constructor<? extends HyperqueryExperiment> getPointConstructor(Point p) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    protected Constructor<? extends SchoolAdmissionExperiment> getEmptyConstructor(Point p) {
+    protected Constructor<? extends HyperqueryExperiment> getEmptyConstructor(Point p) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    protected Class<? extends SchoolAdmissionExperiment> getClass(Point p) {
+    protected Class<? extends HyperqueryExperiment> getClass(Point p) {
         // TODO Auto-generated method stub
         return null;
     }

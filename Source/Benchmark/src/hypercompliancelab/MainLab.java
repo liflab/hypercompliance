@@ -17,6 +17,10 @@
  */
 package hypercompliancelab;
 
+
+import static ca.uqac.lif.labpal.region.DiscreteRange.range;
+
+
 import static ca.uqac.lif.labpal.region.ExtensionDomain.extension;
 import static ca.uqac.lif.labpal.region.ProductRegion.product;
 import static ca.uqac.lif.labpal.table.ExperimentTable.table;
@@ -45,146 +49,170 @@ import ca.uqac.lif.labpal.util.CliParser.ArgumentMap;
 import ca.uqac.lif.spreadsheet.chart.Chart.Axis;
 import ca.uqac.lif.spreadsheet.chart.gnuplot.GnuplotScatterplot;
 import ca.uqac.lif.spreadsheet.functions.ExpandAsColumns;
+import hypercompliancelab.school.SchoolAdmissionExperimentFactory;
+import hypercompliancelab.school.SchoolAdmissionSource;
+import hypercompliancelab.school.properties.*;
 import hypercompliancelab.simple.NumberRunning;
 import hypercompliancelab.simple.SameNumberDAggregation;
 import hypercompliancelab.simple.SameNumberDQuantify;
 import hypercompliancelab.simple.SimpleSource;
-import hypercompliancelab.xes.HospitalSource;
-import hypercompliancelab.xes.LoanApplicationSource;
-import hypercompliancelab.xes.WaboSource;
 
-public class MainLab extends Laboratory
-{
-	@Override
-	public void setup()
-	{
-		// Lab metadata
-		setName("BeepBeep Hypercompliance Benchmark");
-		setAuthor("Sylvain Hallé, Chukri Soueidi");
-		writeDescription("description.html");
-		
-		// The local folder where downloaded files are stored
-		String data_dir = "data/";
-		
-		/* Process command line parameters */
-		ArgumentMap args = getCliArguments();
-		if (args.hasOption("datadir"))
-		{
-			data_dir = args.getOptionValue("datadir");
-			if (!data_dir.endsWith("/"))
-			{
-				data_dir += "/";
-			}
-		}
-		
-		LabFileSystem fs;
-		try
-		{
-			fs = new LabFileSystem(".").open();
-			fs.mkdir(data_dir);
-			fs.chdir(data_dir);
-		}
-		catch (FileSystemException e)
-		{
-			System.err.println(e);
-			return;
-		}
-		
-		/* Setup a factory to get instances of experiments. */
-		HyperqueryExperimentFactory factory = new HyperqueryExperimentFactory(this, fs).setSeed(0);
-		
-		{
-			// Experiments for the simple scenario (auto-generated)
-			ExperimentGroup g = new ExperimentGroup("Simple scenario", "Hyperqueries evaluated on an abstract auto-generated log.");
-			add(g);
-			Region simple_reg = product(
-					extension(SCENARIO, SimpleSource.NAME),
-					extension(QUERY,
-							hypercompliancelab.simple.AverageLength.NAME, NumberRunning.NAME, 
-							SameNumberDAggregation.NAME, SameNumberDQuantify.NAME));
-			add(new Plot(
-					add(
-							transform(
-									table(QUERY, EVENTS, TIME).add(factory, simple_reg)
-										.setTitle("Progressive elapsed time (simple scenario)")
-										.setNickname(latexify("tTimeSimple")),
-									new ExpandAsColumns(QUERY, TIME))),
-					new GnuplotScatterplot().setCaption(Axis.Y, "Time (ms)")));
-			add(new Plot(
-					add(
-							transform(
-									table(QUERY, EVENTS, MEMORY).add(factory, simple_reg)
-										.setTitle("Progressive memory consumption (simple scenario)")
-										.setNickname(latexify("tMemorySimple")),
-									new ExpandAsColumns(QUERY, MEMORY))),
-					new GnuplotScatterplot().setCaption(Axis.Y, "Memory (B)")));
-			for (Region e_r : simple_reg.all(SCENARIO, HyperqueryExperimentFactory.QUERY))
-		  	g.add(factory.get(e_r));
-		}
-		
-		{
-		  // Experiments for a set of pre-recorded XES logs from external sources
-			ExperimentGroup g = new ExperimentGroup("Real-world logs", "Hyperqueries evaluated on a set of XES files retrieved from online repositories.");
-			add(g);
-		  Region xes_reg = product(
-		      extension(SCENARIO, 
-		      		WaboSource.NAME, 
-		      		HospitalSource.NAME, 
-		      		LoanApplicationSource.NAME),
-		      extension(QUERY,
-							hypercompliancelab.xes.AverageLength.NAME,
-							hypercompliancelab.xes.DirectlyFollows.NAME,
-							hypercompliancelab.xes.JaccardLog.NAME,
-							hypercompliancelab.xes.LiveInstances.NAME,
-							hypercompliancelab.xes.MaxCurrent.NAME,
-							hypercompliancelab.xes.MeanInterval.NAME,
-							hypercompliancelab.xes.SameNext.NAME)
-		      );
-		  add(table(SCENARIO, TOTAL_EVENTS, QUERY, THROUGHPUT, MAX_MEMORY).add(factory, xes_reg)
-		  		.setTitle("Aggregate statistics for various real-world logs")
-		  		.setNickname(latexify("tAggregate")));
-		  for (Region e_r : xes_reg.all(SCENARIO))
-		  {
-		  	String scenario = e_r.asPoint().getString(SCENARIO);
-		  	add(new Plot(
-		  			add(transform(table(QUERY, EVENTS, TIME).add(factory, e_r), new ExpandAsColumns(QUERY, TIME))
-		  					.setTitle("Running time for hyperqueries of scenario " + scenario)
-		  					.setNickname(latexify("tTime" + scenario))),
-		  			new GnuplotScatterplot().setCaption(Axis.Y, "Time (ms)")));
-		  	add(new Plot(
-		  			add(transform(table(QUERY, EVENTS, MEMORY).add(factory, e_r), new ExpandAsColumns(QUERY, MEMORY))
-		  					.setTitle("Memory usage for hyperqueries of scenario " + scenario)
-		  					.setNickname(latexify("tMemory" + scenario))),
-		  			new GnuplotScatterplot().setCaption(Axis.Y, "Memory (B)")));
-		  }
-		  for (Region e_r : xes_reg.all(SCENARIO, QUERY))
-		  	g.add(factory.get(e_r));
-		}
-	}
-	
-	@Override
-	public void setupCli(CliParser parser)
-	{
-		parser.addArgument(new Argument().withLongName("datadir").withArgument("dir").withDescription("Store downloaded data files into local folder dir"));
-	}
-	
-	public void writeDescription(String path)
-	{
-		try
-		{
-			JarFile jf = new JarFile(MainLab.class).open();
-			setDescription(FileUtils.readStringFrom(jf, path));
-			jf.close();
-		}
-		catch (FileSystemException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public static void main(String[] args)
-	{
-		initialize(args, MainLab.class);
-	}
+import hypercompliancelab.xes.*;
+
+public class MainLab extends Laboratory {
+    @Override
+    public void setup() {
+        // Lab metadata
+        setName("BeepBeep Hypercompliance Benchmark");
+        setAuthor("Sylvain Hallé, Chukri Soueidi");
+        writeDescription("description.html");
+
+        // The local folder where downloaded files are stored
+        String data_dir = "data/";
+
+        /* Process command line parameters */
+        ArgumentMap args = getCliArguments();
+        if (args.hasOption("datadir")) {
+            data_dir = args.getOptionValue("datadir");
+            if (!data_dir.endsWith("/")) {
+                data_dir += "/";
+            }
+        }
+
+        LabFileSystem fs;
+        try {
+            fs = new LabFileSystem(".").open();
+            fs.mkdir(data_dir);
+            fs.chdir(data_dir);
+        } catch (FileSystemException e) {
+            System.err.println(e);
+            return;
+        }
+
+        /* Setup a factory to get instances of experiments. */
+        HyperqueryExperimentFactory factory = new HyperqueryExperimentFactory(this, fs).setSeed(0);
+
+        {
+            // Experiments for the simple scenario (auto-generated)
+            ExperimentGroup g = new ExperimentGroup("Simple scenario", "Hyperqueries evaluated on an abstract auto-generated log.");
+            add(g);
+            Region simple_reg = product(
+                    extension(SCENARIO, SimpleSource.NAME),
+                    extension(QUERY,
+                            hypercompliancelab.simple.AverageLength.NAME, NumberRunning.NAME,
+                            SameNumberDAggregation.NAME, SameNumberDQuantify.NAME));
+            add(new Plot(
+                    add(
+                            transform(
+                                    table(HyperqueryExperimentFactory.QUERY, EVENTS, TIME).add(factory, simple_reg)
+                                            .setTitle("Progressive elapsed time (simple scenario)"),
+                                    new ExpandAsColumns(QUERY, TIME))),
+                    new GnuplotScatterplot().setCaption(Axis.Y, "Time (ms)")));
+            add(new Plot(
+                    add(
+                            transform(
+                                    table(QUERY, EVENTS, MEMORY).add(factory, simple_reg)
+                                            .setTitle("Progressive memory consumption (simple scenario)"),
+                                    new ExpandAsColumns(QUERY, MEMORY))),
+                    new GnuplotScatterplot().setCaption(Axis.Y, "Memory (B)")));
+            for (Region e_r : simple_reg.all(SCENARIO, QUERY))
+                g.add(factory.get(e_r));
+        }
+
+
+
+        {
+
+
+            // Experiments for a set of pre-recorded XES logs from external sources
+            ExperimentGroup g = new ExperimentGroup("Real-world logs", "Hyperqueries evaluated on a set of XES files retrieved from online repositories.");
+            add(g);
+            Region xes_reg = product(
+                    extension(SCENARIO, WaboSource.NAME, HospitalSource.NAME, LoanApplicationSource.NAME),
+                    extension(QUERY,
+                            hypercompliancelab.xes.AverageLength.NAME,
+                            hypercompliancelab.xes.DirectlyFollows.NAME,
+//							hypercompliancelab.xes.JaccardLog.NAME,
+                            LiveInstances.NAME,
+                            hypercompliancelab.xes.MeanInterval.NAME,
+                            hypercompliancelab.xes.SameNext.NAME)
+            );
+            add(table(SCENARIO, TOTAL_EVENTS, QUERY, THROUGHPUT, MAX_MEMORY).add(factory, xes_reg)
+                    .setTitle("Aggregate statistics for various real-world logs").setNickname("tAggregate"));
+            for (Region e_r : xes_reg.all(SCENARIO)) {
+                String scenario = e_r.asPoint().getString(SCENARIO);
+                add(new Plot(
+                        add(transform(table(QUERY, EVENTS, TIME).add(factory, e_r), new ExpandAsColumns(QUERY, TIME))
+                                .setTitle("Running time for hyperqueries of scenario " + scenario).setNickname("tTime" + scenario)),
+                        new GnuplotScatterplot().setCaption(Axis.Y, "Time (ms)")));
+                add(new Plot(
+                        add(transform(table(QUERY, EVENTS, MEMORY).add(factory, e_r), new ExpandAsColumns(QUERY, MEMORY))
+                                .setTitle("Memory usage for hyperqueries of scenario " + scenario).setNickname("tMemory" + scenario)),
+                        new GnuplotScatterplot().setCaption(Axis.Y, "Memory (B)")));
+            }
+            for (Region e_r : xes_reg.all(SCENARIO, QUERY))
+                g.add(factory.get(e_r));
+        }
+
+        {
+            SchoolAdmissionExperimentFactory s_factory = new SchoolAdmissionExperimentFactory(this, fs).setSeed(0);
+
+
+            ExperimentGroup g = new ExperimentGroup("School Admission ", "Hyperqueries evaluated on logs from the School Admission scenario.");
+            add(g);
+            Region admissions_reg = product(
+                    extension( SCENARIO, SchoolAdmissionSource.NAME),
+                    extension(QUERY,
+                            LiveInstances.NAME,
+                            EvilEmployee.NAME,
+                            StaffLoad.NAME,
+                            ConsistencyCondition.NAME,
+                            BalancedLoad.NAME,
+                            AcceptanceRate.NAME,
+                            SameState.NAME
+                    )
+            );
+
+            add(table(SCENARIO, TOTAL_EVENTS,
+                    QUERY, THROUGHPUT, MAX_MEMORY)
+                    .add(s_factory, admissions_reg)
+                    .setTitle("Aggregate statistics for school admission logs").setNickname("tAggregate"));
+            for (Region e_r : admissions_reg.all(SCENARIO)) {
+                String scenario = e_r.asPoint().getString(SCENARIO);
+                add(new Plot(
+                        add(transform(table(QUERY, EVENTS, TIME).add(s_factory, e_r), new ExpandAsColumns(QUERY, TIME))
+                                .setTitle("Running time for hyperqueries of scenario " + scenario).setNickname("tTime" + scenario)),
+                        new GnuplotScatterplot().setCaption(Axis.Y, "Time (ms)")));
+                add(new Plot(
+                        add(transform(table(QUERY, EVENTS, MEMORY).add(s_factory, e_r), new ExpandAsColumns(QUERY, MEMORY))
+                                .setTitle("Memory usage for hyperqueries of scenario " + scenario).setNickname("tMemory" + scenario)),
+                        new GnuplotScatterplot().setCaption(Axis.Y, "Memory (B)")));
+            }
+            for (Region e_r : admissions_reg.all(SCENARIO, QUERY))
+                g.add(s_factory.get(e_r));
+
+
+        }
+    }
+
+    @Override
+    public void setupCli(CliParser parser) {
+        parser.addArgument(new Argument().withLongName("datadir").withArgument("dir").withDescription("Store downloaded data files into local folder dir"));
+    }
+
+    public void writeDescription(String path) {
+        try {
+            JarFile jf = new JarFile(MainLab.class).open();
+            setDescription(FileUtils.readStringFrom(jf, path));
+            jf.close();
+        } catch (FileSystemException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        initialize(args, MainLab.class);
+    }
+
 
 }

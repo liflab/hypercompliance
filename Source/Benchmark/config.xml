@@ -98,5 +98,135 @@
       </files>
       <bundle>true</bundle>
     </dependency>
+    <dependency>
+      <name>Activiti Engine</name>
+      <classname>org.activiti.engine.runtime.ProcessInstance</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/org/activiti/activiti-engine/7.1.0.M6/activiti-engine-7.1.0.M6.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Activiti Validaiton</name>
+      <classname>org.activiti.validation.ProcessValidatorFactory</classname>
+      <files>
+        <jar> https://repo1.maven.org/maven2/org/activiti/activiti-process-validation/7.1.0.M6/activiti-process-validation-7.1.0.M6.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Activiti Converter</name>
+      <classname>org.activiti.bpmn.constants.BpmnXMLConstants</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/org/activiti/activiti-bpmn-converter/7.1.0.M6/activiti-bpmn-converter-7.1.0.M6.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Commons Lang</name>
+      <classname>org.apache.commons.lang3.StringUtils</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+
+    <dependency>
+      <name>Joda Time</name>
+      <classname>org.joda.time.ReadablePeriod</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/joda-time/joda-time/2.1/joda-time-2.1.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>H2 Database Engine</name>
+      <classname>org.apache.ibatis.transaction.TransactionFactory</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/com/h2database/h2/2.1.214/h2-2.1.214.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Ibatis </name>
+      <classname>org.apache.ibatis.transaction.TransactionFactory</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/org/mybatis/mybatis/3.5.0/mybatis-3.5.0.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>SLF4J API Module</name>
+      <classname>org.slf4j.LoggerFactory</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.7/slf4j-api-2.0.7.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+<!--    <dependency>-->
+<!--      <name>Logback Classic Module</name>-->
+<!--      <classname>ch.qos.logback.classic.Logger</classname>-->
+<!--      <files>-->
+<!--        <jar>https://repo1.maven.org/maven2/ch/qos/logback/logback-classic/1.2.6/logback-classic-1.2.6.jar</jar>-->
+<!--      </files>-->
+<!--      <bundle>true</bundle>-->
+<!--    </dependency>-->
+    <dependency>
+      <name>SLF4J NOP Binding</name>
+      <classname>org.slf4j.simpleLogger.defaultLogLevel</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/org/slf4j/slf4j-nop/2.0.7/slf4j-nop-2.0.7.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+
+    <dependency>
+      <name>Jackson Core</name>
+      <classname>xyz</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.13.4/jackson-core-2.13.4.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Jackson DataBind</name>
+      <classname>com.fasterxml.jackson.databind.ObjectMapper</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.13.4/jackson-databind-2.13.4.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Jackson Annotation</name>
+      <classname>com.fasterxml.jackson.annotation.JsonTypeInfo</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.13.4/jackson-annotations-2.13.4.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Javax El</name>
+      <classname>javax.el.ELResolver</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/javax/el/el-api/2.2/el-api-2.2.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Juel</name>
+      <classname>de.odysseus.el.ExpressionFactoryImpl</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/de/odysseus/juel/juel-impl/2.2.7/juel-impl-2.2.7.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+
+
+
+
+
+
   </dependencies>
+
+
 </build>

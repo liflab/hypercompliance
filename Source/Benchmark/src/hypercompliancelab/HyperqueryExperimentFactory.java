@@ -24,143 +24,131 @@ import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.experiment.ExperimentFactory;
 import ca.uqac.lif.labpal.region.Point;
 import ca.uqac.lif.synthia.Seedable;
+
 import hypercompliancelab.simple.NumberRunning;
 import hypercompliancelab.simple.SameNumberDAggregation;
 import hypercompliancelab.simple.SameNumberDQuantify;
 import hypercompliancelab.simple.SimpleSource;
-import hypercompliancelab.xes.HospitalSource;
-import hypercompliancelab.xes.LazyInterleavedSource;
-import hypercompliancelab.xes.LoanApplicationSource;
-import hypercompliancelab.xes.WaboSource;
+import hypercompliancelab.xes.*;
 
-public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExperiment> implements Seedable
-{
-	/**
-	 * The name of parameter "Hyperquery".
-	 */
-	public static final String QUERY = "Hyperquery";
-	
-	/**
-	 * The name of parameter "Scenario".
-	 */
-	public static final String SCENARIO = "Scenario";
-	
-	protected int m_seed;
-	
-	protected LabFileSystem m_fs;
-	
-	public HyperqueryExperimentFactory(Laboratory lab, LabFileSystem fs)
-	{
-		super(lab);
-		m_seed = 0;
-		m_fs = fs;
-	}
-	
-	@Override
-	public HyperqueryExperimentFactory setSeed(int seed)
-	{
-		m_seed = seed;
-		return this;
-	}
-	
-	@Override
-	/*@ pure null @*/ protected HyperqueryExperiment createExperiment(Point p)
-	{
-		Processor source = null;
-		Processor query = null;
-		String scenario = (String) p.get(SCENARIO);
-		String hyperquery = (String) p.get(QUERY);
-		// Select the appropriate source
-		switch (scenario)
-		{
-		case SimpleSource.NAME:
-			source = new SimpleSource(10000, m_seed);
-			break;
-		case WaboSource.NAME:
-			source = new WaboSource(m_fs);
-			break;
-		case HospitalSource.NAME:
-			source = new HospitalSource(m_fs);
-			break;
-		case LoanApplicationSource.NAME:
-			source = new LoanApplicationSource(m_fs);
-			break;
-		}
-		// Select the appropriate hyperquery
-		switch (hyperquery)
-		{
-		// We deliberately keep fully qualified class names to avoid confusion
-		case hypercompliancelab.simple.AverageLength.NAME:
-			query = new hypercompliancelab.simple.AverageLength();
-			break;
-		case NumberRunning.NAME:
-			query = new NumberRunning();
-			break;
-		case SameNumberDAggregation.NAME:
-			query = new SameNumberDAggregation();
-			break;
-		case SameNumberDQuantify.NAME:
-			query = new SameNumberDQuantify();
-			break;
-		case hypercompliancelab.xes.AverageLength.NAME:
-			query = new hypercompliancelab.xes.AverageLength(((LazyInterleavedSource) source).getEndCondition());
-			break;
-		case hypercompliancelab.xes.DirectlyFollows.NAME:
-			query = new hypercompliancelab.xes.DirectlyFollows(((LazyInterleavedSource) source).getAction());
-			break;
-		case hypercompliancelab.xes.JaccardLog.NAME:
-			query = new hypercompliancelab.xes.JaccardLog(((LazyInterleavedSource) source).getEndCondition());
-			break;
-		case hypercompliancelab.xes.LiveInstances.NAME:
-			query = new hypercompliancelab.xes.LiveInstances(((LazyInterleavedSource) source).getEndCondition());
-			break;
-		case hypercompliancelab.xes.MaxCurrent.NAME:
-			query = new hypercompliancelab.xes.MaxCurrent(((LazyInterleavedSource) source).getAction(), ((LazyInterleavedSource) source).getEndCondition(), 3);
-			break;
-		case hypercompliancelab.xes.MeanInterval.NAME:
-			query = new hypercompliancelab.xes.MeanInterval(((LazyInterleavedSource) source).getTimestamp());
-			break;
-		case hypercompliancelab.xes.SameNext.NAME:
-			query = new hypercompliancelab.xes.SameNext(((LazyInterleavedSource) source).getAction());
-			break;
-		}
-		if (source == null || query == null)
-		{
-			return null;
-		}
-		HyperqueryExperiment he = new HyperqueryExperiment(source, query);
-		if (query instanceof Describable)
-		{
-			he.setQueryDescription(((Describable) query).getDescription());
-		}
-		if (source instanceof Describable)
-		{
-			he.setScenarioDescription(((Describable) source).getDescription());
-		}
-		he.writeInput(SCENARIO, scenario);
-		he.writeInput(QUERY, hyperquery);
-		return he;
-	}
 
-	@Override
-	protected Constructor<? extends HyperqueryExperiment> getPointConstructor(Point p)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+public class HyperqueryExperimentFactory extends ExperimentFactory<HyperqueryExperiment> implements Seedable {
+    /**
+     * The name of parameter "Hyperquery".
+     */
+    public static final String QUERY = "Hyperquery";
 
-	@Override
-	protected Constructor<? extends HyperqueryExperiment> getEmptyConstructor(Point p)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /**
+     * The name of parameter "Scenario".
+     */
+    public static final String SCENARIO = "Scenario";
 
-	@Override
-	protected Class<? extends HyperqueryExperiment> getClass(Point p)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+    protected int m_seed;
+
+    protected LabFileSystem m_fs;
+
+    public HyperqueryExperimentFactory(Laboratory lab, LabFileSystem fs) {
+        super(lab);
+        m_seed = 0;
+        m_fs = fs;
+    }
+
+    @Override
+    public HyperqueryExperimentFactory setSeed(int seed) {
+        m_seed = seed;
+        return this;
+    }
+
+    @Override
+    /*@ pure null @*/ protected HyperqueryExperiment createExperiment(Point p) {
+        Processor source = null;
+        Processor query = null;
+        String scenario = (String) p.get(SCENARIO);
+        String hyperquery = (String) p.get(QUERY);
+        // Select the appropriate source
+        switch (scenario) {
+            case SimpleSource.NAME:
+                source = new SimpleSource(10000, m_seed);
+                break;
+            case WaboSource.NAME:
+                source = new WaboSource(m_fs);
+                break;
+            case HospitalSource.NAME:
+                source = new HospitalSource(m_fs);
+                break;
+            case LoanApplicationSource.NAME:
+                source = new LoanApplicationSource(m_fs);
+                break;
+        }
+        // Select the appropriate hyperquery
+        switch (hyperquery) {
+            // We deliberately keep fully qualified class names to avoid confusion
+            case hypercompliancelab.simple.AverageLength.NAME:
+                query = new hypercompliancelab.simple.AverageLength();
+                break;
+            case NumberRunning.NAME:
+                query = new NumberRunning();
+                break;
+            case SameNumberDAggregation.NAME:
+                query = new SameNumberDAggregation();
+                break;
+            case SameNumberDQuantify.NAME:
+                query = new SameNumberDQuantify();
+                break;
+            case hypercompliancelab.xes.AverageLength.NAME:
+                query = new hypercompliancelab.xes.AverageLength(((LazyInterleavedSource) source).getEndCondition());
+                break;
+            case hypercompliancelab.xes.DirectlyFollows.NAME:
+                query = new hypercompliancelab.xes.DirectlyFollows(((LazyInterleavedSource) source).getAction());
+                break;
+            case hypercompliancelab.xes.JaccardLog.NAME:
+                query = new hypercompliancelab.xes.JaccardLog(((LazyInterleavedSource) source).getEndCondition());
+                break;
+            case hypercompliancelab.xes.LiveInstances.NAME:
+                query = new hypercompliancelab.xes.LiveInstances(((LazyInterleavedSource) source).getEndCondition());
+                break;
+            case hypercompliancelab.xes.MaxCurrent.NAME:
+                query = new hypercompliancelab.xes.MaxCurrent(((LazyInterleavedSource) source).getAction(), ((LazyInterleavedSource) source).getEndCondition(), 3);
+                break;
+            case hypercompliancelab.xes.MeanInterval.NAME:
+                query = new hypercompliancelab.xes.MeanInterval(((LazyInterleavedSource) source).getTimestamp());
+                break;
+            case hypercompliancelab.xes.SameNext.NAME:
+                query = new hypercompliancelab.xes.SameNext(((LazyInterleavedSource) source).getAction());
+                break;
+        }
+        if (source == null || query == null) {
+            return null;
+        }
+        HyperqueryExperiment he = new HyperqueryExperiment(source, query);
+        if (query instanceof Describable) {
+            he.setQueryDescription(((Describable) query).getDescription());
+        }
+        if (source instanceof Describable) {
+            he.setScenarioDescription(((Describable) source).getDescription());
+        }
+        he.writeInput(SCENARIO, scenario);
+        he.writeInput(QUERY, hyperquery);
+        return he;
+    }
+
+
+    @Override
+    protected Constructor<? extends HyperqueryExperiment> getPointConstructor(Point p) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected Constructor<? extends HyperqueryExperiment> getEmptyConstructor(Point p) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected Class<? extends HyperqueryExperiment> getClass(Point p) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

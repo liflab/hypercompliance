@@ -47,7 +47,9 @@
   <bindir>bin</bindir>
   <depdir>dep</depdir>
   <libdir>lib</libdir>
-  
+  <extradeps>jars</extradeps>
+  <resources>resources</resources>
+
   <test>
     <srcdir>srctest</srcdir>
     <bindir>bintest</bindir>
@@ -111,6 +113,14 @@
       <classname>org.activiti.validation.ProcessValidatorFactory</classname>
       <files>
         <jar> https://repo1.maven.org/maven2/org/activiti/activiti-process-validation/7.1.0.M6/activiti-process-validation-7.1.0.M6.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
+    <dependency>
+      <name>Activiti Model</name>
+      <classname>org.activiti.bpmn.model.FlowElement</classname>
+      <files>
+        <jar>https://repo1.maven.org/maven2/org/activiti/activiti-bpmn-model/7.1.0.M6/activiti-bpmn-model-7.1.0.M6.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>

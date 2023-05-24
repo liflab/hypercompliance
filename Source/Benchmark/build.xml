@@ -65,7 +65,10 @@
   
   <!-- The folder where the downloaded dependencies (if any) should go -->
   <property name="build.depdir" value="Source/Core/dep"/>
-  
+
+
+
+
   <!-- The folder with the project's test source files -->
   <property name="build.test.srcdir" value="Source/CoreTest/src"/>
   
@@ -109,7 +112,11 @@
   
   <!-- The filename pattern to recognize test binary files -->
   <property name="build.test.filenamepattern.bin" value="**/*Test.class"/>
-  
+
+    <!-- The filename pattern to recognize resources files -->
+  <property name="resources.dir" value="resources"/>
+
+
   <!-- Target: initialization
        All other targets should ultimately
        depend on this one (except perhaps very simple ones such as
@@ -258,15 +265,22 @@
             <attribute name="Implementation-Version" value="${build.version}"/>
           </section>
 	  </manifest>
+
 	  <fileset dir="${build.bindir}">
 	    <filename name="**/*"/>
         <not>
           <filename name="${build.test.filenamepattern.bin}"/>
         </not>
 	  </fileset>
+      <fileset dir="${build.resources}">
+        <include name="**/*.xml" if="${build.jar.withdeps}"/>
+      </fileset>
 	  <zipgroupfileset dir="${build.depdir}">
 	    <include name="**/*.jar" if="${build.jar.withdeps}"/>
 	  </zipgroupfileset>
+      <zipgroupfileset dir="${build.extradeps}">
+        <include name="**/*.jar" if="${build.jar.withdeps}"/>
+      </zipgroupfileset>
 	</jar>
 	<jar destfile="${build.jar.filename}-${build.version}-sources.jar" filesetmanifest="skip">
 	  <fileset dir="${build.srcdir}">

@@ -41,7 +41,7 @@ public class AcceptanceRate extends Aggregate implements Describable {
     /**
      * The name of this hyperquery.
      */
-    public static final transient String NAME = "Acceptance Ratio";
+    public static final transient String NAME = "Acceptance Rate";
 
     public static final double REJECTION_THRESHOLD = 0.4;
 

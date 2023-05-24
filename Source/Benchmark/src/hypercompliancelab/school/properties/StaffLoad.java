@@ -30,7 +30,7 @@ public class StaffLoad extends GroupProcessor implements Describable {
     /**
      * The name of this hyperquery.
      */
-    public static final transient String NAME = "Employee Capacity Limit";
+    public static final transient String NAME = "Staff Load";
 
     /**
      * The number of cases that an employee can handle at any given time.

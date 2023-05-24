@@ -146,9 +146,6 @@ public class SchoolAdmissionSource extends LazyInterleavedSource implements Desc
 
             // If the file already exists, do nothing
             if (m_fs.isFile(m_filename)) return;
-
-            System.out.println("." + m_fs.pwd() + "/" + s_xesFilename);
-
             SchoolAdmissionProcess.runAndProduceLogs(NUMBER_OF_TRACES, "." + m_fs.pwd() + "/" + s_xesFilename);
         }
     }

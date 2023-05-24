@@ -27,7 +27,7 @@ public class SameState extends GroupProcessor implements Describable {
     /**
      * The name of this hyperquery.
      */
-    public static final transient String NAME = "Under Review";
+    public static final transient String NAME = "Same State (Under Review)";
 
     /* The maximum number of instances of a process that can be in the same
      * state at the same time. */

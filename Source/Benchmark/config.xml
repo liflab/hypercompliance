@@ -100,6 +100,7 @@
       </files>
       <bundle>true</bundle>
     </dependency>
+    <!-- Dependencies of the Activiti Engine -->
     <dependency>
       <name>Activiti Engine</name>
       <classname>org.activiti.engine.runtime.ProcessInstance</classname>
@@ -192,7 +193,7 @@
 
     <dependency>
       <name>Jackson Core</name>
-      <classname>xyz</classname>
+      <classname>com.fasterxml.jackson.core.JsonParser</classname>
       <files>
         <jar>https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.13.4/jackson-core-2.13.4.jar</jar>
       </files>

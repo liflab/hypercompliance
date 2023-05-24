@@ -1,6 +1,6 @@
 /*
   A BeepBeep palette to evaluate hypercompliance queries.
-  Copyright (C) 2023 Sylvain Hallé
+  Copyright (C) 2023 Sylvain Hallé and Chukri Soueidi
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as published by

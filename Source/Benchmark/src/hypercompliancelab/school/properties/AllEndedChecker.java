@@ -22,6 +22,7 @@ import static ca.uqac.lif.cep.Connector.connect;
  * @author Sylvain Hallé
  */
 
+@Deprecated
 public class AllEndedChecker {
 
     public static void main(String[] args) {

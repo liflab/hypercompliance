@@ -85,7 +85,7 @@ public class HyperqueryExperiment extends Experiment
 	 */
 	/*@ null @*/ protected String m_queryDescription;
 	
-	HyperqueryExperiment(Processor source, Processor policy)
+	protected HyperqueryExperiment(Processor source, Processor policy)
 	{
 		super();
 		m_source = source;

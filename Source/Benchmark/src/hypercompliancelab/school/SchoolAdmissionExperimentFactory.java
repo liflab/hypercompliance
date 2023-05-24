@@ -23,13 +23,15 @@ import ca.uqac.lif.labpal.experiment.ExperimentFactory;
 import ca.uqac.lif.labpal.region.Point;
 import ca.uqac.lif.synthia.Seedable;
 import hypercompliancelab.Describable;
-import hypercompliancelab.HyperqueryProvider;
 import hypercompliancelab.LabFileSystem;
-import hypercompliancelab.SourceProvider;
+
 import hypercompliancelab.school.properties.*;
 import hypercompliancelab.xes.*;
 
 import java.lang.reflect.Constructor;
+
+import static hypercompliancelab.HyperqueryExperimentFactory.QUERY;
+import static hypercompliancelab.HyperqueryExperimentFactory.SCENARIO;
 
 public class SchoolAdmissionExperimentFactory extends ExperimentFactory<SchoolAdmissionExperiment> implements Seedable {
     protected int m_seed;
@@ -52,8 +54,8 @@ public class SchoolAdmissionExperimentFactory extends ExperimentFactory<SchoolAd
     /*@ pure null @*/ protected SchoolAdmissionExperiment createExperiment(Point p) {
         Processor source = null;
         Processor query = null;
-        String scenario = (String) p.get(SourceProvider.SCENARIO);
-        String hyperquery = (String) p.get(HyperqueryProvider.QUERY);
+        String scenario = (String) p.get(SCENARIO);
+        String hyperquery = (String) p.get(QUERY);
         // Select the appropriate source
         switch (scenario) {
 
@@ -96,8 +98,8 @@ public class SchoolAdmissionExperimentFactory extends ExperimentFactory<SchoolAd
         if (source instanceof Describable) {
             he.setScenarioDescription(((Describable) source).getDescription());
         }
-        he.writeInput(SourceProvider.SCENARIO, scenario);
-        he.writeInput(HyperqueryProvider.QUERY, hyperquery);
+        he.writeInput(SCENARIO, scenario);
+        he.writeInput(QUERY, hyperquery);
         return he;
     }
 

@@ -219,7 +219,7 @@ public class HyperqueryExperiment extends Experiment
 		writeOutput(TOTAL_TIME, new Millisecond(duration));
 		writeOutput(TOTAL_EVENTS, ev_cnt);
 		writeOutput(MAX_MEMORY, max_mem);
-		writeOutput(THROUGHPUT, new Hertz((float) ev_cnt / (float) duration * 1000f));
+		writeOutput(THROUGHPUT, new Hertz((int)((float) ev_cnt / (float) duration * 1000f)));
 	}
 	
 	@Override

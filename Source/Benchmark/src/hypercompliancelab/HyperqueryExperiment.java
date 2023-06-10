@@ -202,7 +202,8 @@ public class HyperqueryExperiment extends Experiment
 			{
 				l_events.add(ev_cnt);
 				l_time.add(Stopwatch.lap(this));
-				l_mem.add(getMemory(printer));
+				mem = getMemory(printer);
+				l_mem.add(mem);
 				max_mem = Math.max(mem, max_mem);
 				if (source_length > 0)
 				{

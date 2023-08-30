@@ -66,6 +66,7 @@ public class MainLab extends Laboratory {
 		// Lab metadata
 		setName("BeepBeep Hypercompliance Benchmark");
 		setAuthor("Sylvain Hallé, Chukri Soueidi");
+		setDoi("10.5281/zenodo.8303080");
 		writeDescription("description.html");
 
 		// The local folder where downloaded files are stored

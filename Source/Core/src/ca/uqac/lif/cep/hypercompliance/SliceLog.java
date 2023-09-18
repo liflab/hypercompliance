@@ -69,6 +69,9 @@ public class SliceLog extends SynchronousProcessor
 	 */
 	/*@ non_null @*/ protected final Choice m_choice;
 	
+	/**
+	 * Saves the last event output by the processor.
+	 */
 	/*@ null @*/ protected Object m_lastOutput;
 
 	/**
@@ -102,7 +105,7 @@ public class SliceLog extends SynchronousProcessor
 		Object trace_id = upd.getId();
 		if (!m_slices.containsKey(trace_id))
 		{
-			m_slices.put(trace_id, new SlicePushUnit(m_sliceProcessor.duplicate()));
+			m_slices.put(trace_id, getPushUnit());
 		}
 		{
 			SlicePushUnit spu = m_slices.get(trace_id);
@@ -147,6 +150,16 @@ public class SliceLog extends SynchronousProcessor
 			m_lastOutput = o;
 		}
 		return true;
+	}
+	
+	/**
+	 * Gets a new instance of the {@link SlicePushUnit} to account for a new
+	 * trace instance in the log. 
+	 * @return The push unit
+	 */
+	/*@ non_null @*/ protected SlicePushUnit getPushUnit()
+	{
+		return new SlicePushUnit(m_sliceProcessor.duplicate());
 	}
 	
 	protected Object processMap(TreeMap<Object,Object> map)
@@ -200,7 +213,7 @@ public class SliceLog extends SynchronousProcessor
 	 * of the "end of trace" notification to determine if the slice is active
 	 * or not.
 	 */
-	protected class SlicePushUnit extends PushUnit
+	protected static class SlicePushUnit extends PushUnit
 	{
 		/**
 		 * The flag that keeps track of the activity of the push unit.
@@ -221,6 +234,13 @@ public class SliceLog extends SynchronousProcessor
 		public boolean isActive()
 		{
 			return !m_sink.seenEndOfTrace();
+		}
+		
+		@Override
+		public String toString()
+		{
+			Object last = getLast();
+			return last == null ? "null" : last.toString();
 		}
 		
 		@Override

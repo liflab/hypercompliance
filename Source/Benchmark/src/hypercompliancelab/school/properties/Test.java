@@ -87,7 +87,9 @@ public class Test {
 
     public static void main(String[] args) throws FileSystemException, IOException {
 
-        List<String> scenarios = new ArrayList<String>() {{
+        List<String> scenarios = new ArrayList<String>() {private static final long serialVersionUID = 1L;
+
+        {
             add("EvilEmployee"); //Done
             add("StaffLoad"); // Done
             add("BalancedLoad"); //Done

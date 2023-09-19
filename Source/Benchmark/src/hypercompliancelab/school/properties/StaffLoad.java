@@ -38,6 +38,8 @@ public class StaffLoad extends GroupProcessor implements Describable {
 
     public static void main(String[] args) throws FileSystemException, IOException {
         Test.runScenario(new ArrayList<String>() {
+            private static final long serialVersionUID = 1L;
+
             {
                 add("StaffLoad");
             }

@@ -16,6 +16,9 @@ import java.util.Map;
  * This class logs an event on the execution of each task in the process in XES format.
  */
 public class XesExecutionListener implements ExecutionListener {
+    private static final long serialVersionUID = 1L;
+
+
     private final XesLogger xesLogger;
 
 

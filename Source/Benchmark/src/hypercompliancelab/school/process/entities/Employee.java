@@ -6,6 +6,7 @@ import java.io.Serializable;
  * Represents an employee of the school
  */
 public class Employee implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String name;
     private String jobTitle;
 

@@ -7,6 +7,7 @@ import java.time.LocalDate;
  * Represents an applicant to the school
  */
 public class Applicant implements Serializable {
+    private static final long serialVersionUID = 1L;
     String name;
     double GPA;
     String school;

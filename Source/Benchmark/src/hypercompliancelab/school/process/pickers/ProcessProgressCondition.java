@@ -7,6 +7,7 @@ import java.io.Serializable;
 public class ProcessProgressCondition implements Serializable {
 
 
+    private static final long serialVersionUID = 1L;
     int maxStepReached;
     public ProcessProgressCondition(int i) {
         maxStepReached = i;

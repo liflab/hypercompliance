@@ -28,14 +28,41 @@ import java.util.Map.Entry;
  */
 public interface AbstractLog
 {
+  /**
+   * Determines if a log contains a trace for a given identifier.
+   * @param key The identifier
+   * @return {@code true} if the log contains a trace for this identifier,
+   * {@code false} otherwise
+   */
   public boolean containsKey(Object key);
   
+  /**
+   * Gets the set of entries in this log. In this context, an entry's key is
+   * a trace identifier, and its associated value is the corresponding trace
+   * of events.
+   * @return The set of entries 
+   */
   public Set<Entry<Object, List<Object>>> entrySet();
   
+  /**
+   * Gets the set of trace identifiers that this log contains.
+   * @return The set of identifiers
+   */
   public Set<Object> keySet();
   
+  /**
+   * Gets the trace of events associated to a given trace identifier.
+   * @param key The identifier
+   * @return The corresponding trace of events, or {@code null} if no trace
+   * exists for this identifier
+   */
   public List<Object> get(Object key);
   
+  /**
+   * Gets the size of this log, expressed in terms of the number of traces
+   * it contains.
+   * @return The log size
+   */
   public int size();
   
   /**
@@ -45,5 +72,9 @@ public interface AbstractLog
    */
   public Log update(Log log);
   
+  /**
+   * Determines if the log is empty, i.e.<!-- --> does not contain any trace.
+   * @return {@code true} if the log is empty, {@code false} otherwise
+   */
   public boolean isEmpty();
 }

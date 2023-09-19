@@ -24,7 +24,9 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * A modifiable instance of {@link AbstractLog}.
+ * A modifiable instance of {@link AbstractLog}. Concretely, this class
+ * implements the {@link AbstractLog} interface by maintaining a
+ * {@link TreeMap} that keeps the traces sorted by their identifier.
  */
 public class Log implements AbstractLog
 {  
@@ -41,7 +43,7 @@ public class Log implements AbstractLog
     super();
     m_entries = new TreeMap<Object,List<Object>>();
   }
-    
+
   public Log appendTo(Object k, List<Object> trace)
   {
     if (!containsKey(k))
@@ -55,7 +57,7 @@ public class Log implements AbstractLog
     }
     return this;
   }
-  
+
   /**
    * Appends the same trace suffix to all traces in a log.
    * @param trace The suffix
@@ -63,11 +65,11 @@ public class Log implements AbstractLog
    */
   /*@ non_null @*/ public Log appendToAll(List<Object> trace)
   {
-  	for (Map.Entry<Object,List<Object>> e : entrySet())
-  	{
-  		e.getValue().addAll(trace);
-  	}
-  	return this;
+    for (Map.Entry<Object,List<Object>> e : entrySet())
+    {
+      e.getValue().addAll(trace);
+    }
+    return this;
   }
 
   @Override
@@ -127,15 +129,15 @@ public class Log implements AbstractLog
   {
     return m_entries.size();
   }
-  
+
   public int eventCount()
   {
-  	int ev_cnt = 0;
-  	for (Map.Entry<Object,List<Object>> e : entrySet())
-  	{
-  		ev_cnt += e.getValue().size();
-  	}
-  	return ev_cnt;
+    int ev_cnt = 0;
+    for (Map.Entry<Object,List<Object>> e : entrySet())
+    {
+      ev_cnt += e.getValue().size();
+    }
+    return ev_cnt;
   }
 
   public void clear()

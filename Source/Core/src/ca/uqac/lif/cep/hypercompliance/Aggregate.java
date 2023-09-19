@@ -28,6 +28,27 @@ import ca.uqac.lif.cep.tmf.SinkLast;
 import ca.uqac.lif.cep.util.Bags.RunOn;
 import ca.uqac.lif.cep.util.Maps;
 
+/**
+ * Aggregates the events produced by a processor running on each trace
+ * contained in a log.
+ * This processor is parameterized by two other processors:
+ * <ul>
+ * <li>&sigma;&#x305;</span>: a distinct instance of this processor is run
+ * separately on each slice of the log</li>
+ * <li>&Sigma;: runs on the set comprised of the last event output by each
+ * instance of &sigma;&#x305;</li>
+ * </ul>
+ * Optionally, the processor can be instructed to only consider for &Sigma;
+ * the slices of the log that are currently active (i.e. have not seen the
+ * end of trace marker), or on the contrary only the slices of the log that
+ * are inactive (i.e. have been send the end of trace marker and will thus
+ * no longer receive an update). This is done using the {@link Choice}
+ * parameter. By default all slices are considered.
+ * <p>
+ * Graphically, this processor is represented as the following pictogram:
+ * <p>
+ * <img src="{@docRoot}/doc-files/Aggregate.png" alt="Processor" />
+ */
 public class Aggregate extends SliceLog
 {
 	/*@ non_null @*/ protected final Processor m_aggregator;

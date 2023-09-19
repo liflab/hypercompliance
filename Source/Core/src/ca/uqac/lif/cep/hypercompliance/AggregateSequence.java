@@ -29,6 +29,34 @@ import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.ProcessorException;
 import ca.uqac.lif.cep.tmf.SinkLast;
 
+/**
+ * Aggregates the events produced by a processor running on each trace
+ * contained in a log, by ordering these logs according to a user-defined
+ * relation. This processor is parameterized by four other processors.
+ * The first two are identical to {@link Aggregate}:
+ * <ul>
+ * <li>&sigma;&#x305;</span>: a distinct instance of this processor is run
+ * separately on each slice of the log</li>
+ * <li>&Sigma;: runs on the <em>sequence</em> comprised of the last event
+ * output by each instance of &sigma;&#x305;</li>
+ * </ul>
+ * <p>
+ * Note however that &Sigma; runs on a sequence, which implies that the
+ * instances of &sigma;&#x305; are considered in a specific order when being
+ * fed to &Sigma;. This is done using two other processors:
+ * <ul>
+ * <li>&gamma;</span>: a global ordering processor that produces a stream of
+ * values</li>
+ * <li>&lambda;: a local ordering processor; one instance of &lambda; is
+ * associated to each slice in the log. Each receives the stream produced by
+ * &gamma; and produces another output stream. The output from each &lambda;
+ * is used to order the corresponding &sigma;&#x305;.</li>
+ * </ul>
+ * <p>
+ * Graphically, this processor is represented as the following pictogram:
+ * <p>
+ * <img src="{@docRoot}/doc-files/AggregateSequence.png" alt="Processor" />
+ */
 public class AggregateSequence extends SliceLog
 {
 	/**

@@ -48,6 +48,9 @@ public class LogSource extends QueueSource
 		}
 	}
 	
+	/**
+	 * Creates an empty log source.
+	 */
 	protected LogSource()
 	{
 		super(1);

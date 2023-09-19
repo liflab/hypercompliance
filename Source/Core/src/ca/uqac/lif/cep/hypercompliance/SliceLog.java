@@ -34,6 +34,10 @@ import ca.uqac.lif.cep.tmf.SinkLast;
  * identifiers with the last event produced by the corresponding processor
  * instance.
  * <p>
+ * Graphically, this processor is represented as the following pictogram:
+ * <p>
+ * <img src="{@docRoot}/doc-files/SliceLog.png" alt="Processor" />
+ * <p>
  * As an example, suppose that &pi; is the processor producing the cumulative
  * sum of a stream of numbers, and the following input stream:
  * <p>
@@ -42,6 +46,14 @@ import ca.uqac.lif.cep.tmf.SinkLast;
  * The {@code SliceLog} processor would produce as its output:
  * <p>
  * {a &mapsto; 1}, {a &mapsto; 3}, {a &mapsto; 3, b &mapsto; 8}, &hellip; 
+ * <p>
+ * Optionally, the processor can be instructed to only consider
+ * the slices of the log that are currently active (i.e. have not seen the
+ * end of trace marker), or on the contrary only the slices of the log that
+ * are inactive (i.e. have been send the end of trace marker and will thus
+ * no longer receive an update). This is done using the {@link Choice}
+ * parameter. By default all slices are included in the output map.
+ * 
  * @author Sylvain Hallé
  */
 public class SliceLog extends SynchronousProcessor

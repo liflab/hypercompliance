@@ -53,11 +53,20 @@ import examples.MonotonicLength.Counter;
  */
 public class Escalation
 {
-
+  /**
+   * The string designating the manager.
+   */
+  public static final String MANAGER = "manager";
+  
+  /**
+   * The string designating the end of a slice.
+   */
+  public static final String END = "END";
+  
 	public static void main(String[] args)
 	{
-		/* The minimum number of rejected applications for a client before it is
-		 * assigned to the manager. */
+		/* The number of rejected applications for a client before it is assigned
+		 * to the manager. */
 		int k = 2;
 		
 		/* Create a builder that will create events for this example. Each event is
@@ -69,10 +78,10 @@ public class Escalation
 		Slice by_emp = new Slice(new FunctionTree(new FetchAttribute("Client"), LogUpdate.getEvent),
 				new AggregateSequence(
 						new GroupProcessor(1, 1) {{
-							DetectEnd end = new DetectEnd(new FunctionTree(Equals.instance, StreamVariable.X, new Constant("END")));
+							DetectEnd end = new DetectEnd(new FunctionTree(Equals.instance, StreamVariable.X, new Constant(END)));
 							Fork f = new Fork();
 							connect(end, f);
-							ApplyFunction is_failure = new ApplyFunction(new FunctionTree(Equals.instance, StreamVariable.X, new Constant("X")));
+							ApplyFunction is_failure = new ApplyFunction(new FunctionTree(Equals.instance, new FunctionTree(new FetchAttribute("Action"), StreamVariable.X), new Constant("X")));
 							connect(f, 0, is_failure, 0);
 							Cumulate or = new Cumulate(Booleans.or);
 							connect(is_failure, or);
@@ -95,11 +104,11 @@ public class Escalation
 					connect(f, 0, is_failure, 0);
 					Cumulate add = new Cumulate(Numbers.addition);
 					connect(is_failure, add);
-					ApplyFunction gt = new ApplyFunction(new FunctionTree(Numbers.isGreaterThan, StreamVariable.X, new Constant(k)));
+					ApplyFunction gt = new ApplyFunction(new FunctionTree(Numbers.isGreaterOrEqual, StreamVariable.X, new Constant(k)));
 					connect(add, gt);
 					Trim trim = new Trim(1);
 					connect(f, 1, trim, 0);
-					ApplyFunction is_man = new ApplyFunction(new FunctionTree(Equals.instance, new FunctionTree(new NthElement(1), StreamVariable.X), new Constant("manager")));
+					ApplyFunction is_man = new ApplyFunction(new FunctionTree(Equals.instance, new FunctionTree(new NthElement(1), StreamVariable.X), new Constant(MANAGER)));
 					connect(trim, is_man);
 					ApplyFunction implies = new ApplyFunction(Booleans.implies);
 					connect(gt, 0, implies, 0);
@@ -110,8 +119,20 @@ public class Escalation
 		
 			connect(by_emp, new Println());
 			
+			/* Push events to illustrate the detection of the violation. The first
+			 * two traces for client1 end in a rejection (X), and a "false" verdict
+			 * is emitted at the start of the third trace, since the employee
+			 * assigned to it is not the manager. */
 			Pushable p = by_emp.getPushableInput();
 			p.push(new LogUpdate(0, builder.createTuple("client1", "emp1", "a")));
+			p.push(new LogUpdate(0, builder.createTuple("client1", "emp1", "X")));
+			p.push(new LogUpdate(0, builder.createTuple("client1", "emp1", "END")));
+			p.push(new LogUpdate(1, builder.createTuple("client1", "emp2", "a")));
+      p.push(new LogUpdate(1, builder.createTuple("client1", "emp2", "X")));
+      p.push(new LogUpdate(1, builder.createTuple("client1", "emp2", "END")));
+      p.push(new LogUpdate(2, builder.createTuple("client1", "emp3", "a")));
+      p.push(new LogUpdate(2, builder.createTuple("client1", "emp3", "X")));
+      p.push(new LogUpdate(2, builder.createTuple("client1", "emp3", "END")));
 	}
 
 }

@@ -27,8 +27,6 @@ import hypercompliancelab.HyperqueryExperiment;
 import hypercompliancelab.LabFileSystem;
 
 import hypercompliancelab.school.properties.*;
-import hypercompliancelab.xes.*;
-
 import java.lang.reflect.Constructor;
 
 import static hypercompliancelab.HyperqueryExperimentFactory.QUERY;

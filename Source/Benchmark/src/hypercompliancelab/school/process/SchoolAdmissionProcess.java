@@ -25,8 +25,6 @@ import org.activiti.engine.*;
 import org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.slf4j.helpers.NOPLogger;
-
 import ca.uqac.lif.fs.FileSystemException;
 import ca.uqac.lif.fs.HardDisk;
 

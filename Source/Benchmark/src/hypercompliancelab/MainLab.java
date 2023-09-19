@@ -18,9 +18,6 @@
 package hypercompliancelab;
 
 
-import static ca.uqac.lif.labpal.region.DiscreteRange.range;
-
-
 import static ca.uqac.lif.labpal.region.ExtensionDomain.extension;
 import static ca.uqac.lif.labpal.region.ProductRegion.product;
 import static ca.uqac.lif.labpal.table.ExperimentTable.table;

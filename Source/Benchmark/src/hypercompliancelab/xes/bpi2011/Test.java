@@ -19,7 +19,6 @@ import ca.uqac.lif.cep.tuples.TupleMap;
 import ca.uqac.lif.cep.util.Equals;
 import ca.uqac.lif.fs.FileSystemException;
 import ca.uqac.lif.fs.HardDisk;
-import hypercompliancelab.xes.AverageLength;
 import hypercompliancelab.xes.LiveInstances;
 import hypercompliancelab.xes.SelectColumns;
 

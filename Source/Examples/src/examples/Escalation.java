@@ -49,7 +49,10 @@ import examples.MonotonicLength.Counter;
 /**
  * Evaluates the hyperpolicy stipulating that if a client has <i>n</i> of his
  * applications ending in a rejection, the next application for this client
- * must be assigned to the manager.
+ * must be assigned to the manager. Graphically, this pipeline can be
+ * represented as follows:
+ * <p>
+ * <img src="{@docRoot}/doc-files/Escalation.png" alt="Pipeline"/>
  */
 public class Escalation
 {

@@ -1,7 +1,6 @@
 package hypercompliancelab.school.properties;
 
 import ca.uqac.lif.cep.GroupProcessor;
-import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.functions.*;
 import ca.uqac.lif.cep.hypercompliance.Aggregate;
 import ca.uqac.lif.cep.hypercompliance.LogUpdate;

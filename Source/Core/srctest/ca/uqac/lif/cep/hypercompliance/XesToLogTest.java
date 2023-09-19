@@ -24,9 +24,6 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import ca.uqac.lif.cep.tuples.Tuple;
-import ca.uqac.lif.cep.tuples.TupleMap;
-
 /**
  * Unit tests for {@link XesToLog}.
  */

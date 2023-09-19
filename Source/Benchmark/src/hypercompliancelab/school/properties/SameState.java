@@ -3,7 +3,6 @@ package hypercompliancelab.school.properties;
 import ca.uqac.lif.cep.GroupProcessor;
 import ca.uqac.lif.cep.functions.*;
 import ca.uqac.lif.cep.hypercompliance.SliceLog;
-import ca.uqac.lif.cep.hypercompliance.ValueList;
 import ca.uqac.lif.cep.ltl.HardCast;
 import ca.uqac.lif.cep.tmf.DetectEnd;
 import ca.uqac.lif.cep.tmf.Fork;

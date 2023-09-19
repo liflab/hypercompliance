@@ -6,7 +6,6 @@ import ca.uqac.lif.cep.Pushable;
 import ca.uqac.lif.cep.hypercompliance.InterleavedSource;
 import ca.uqac.lif.cep.hypercompliance.Log;
 import ca.uqac.lif.cep.hypercompliance.LogUpdate;
-import ca.uqac.lif.cep.hypercompliance.XesToLog;
 import ca.uqac.lif.cep.io.Print;
 import ca.uqac.lif.fs.FileSystemException;
 import ca.uqac.lif.fs.HardDisk;

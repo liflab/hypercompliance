@@ -148,6 +148,9 @@ public class LogUpdate implements AbstractLog
   
   /**
    * A BeepBeep function that extracts the event in a log update.
+   * It is represented graphically by the following pictogram:
+   * <p>
+   * <img src="{@docRoot}/doc-files/GetEvent.png" alt="Pictogram" />
    */
   public static class GetEvent extends UnaryFunction<LogUpdate,Object>
   {
@@ -175,6 +178,9 @@ public class LogUpdate implements AbstractLog
   
   /**
    * A BeepBeep function that extracts the trace identifier in a log update.
+   * It is represented graphically by the following pictogram:
+   * <p>
+   * <img src="{@docRoot}/doc-files/GetId.png" alt="Pictogram" />
    */
   public static class GetId extends UnaryFunction<LogUpdate,Object>
   {

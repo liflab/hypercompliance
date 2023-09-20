@@ -60,6 +60,7 @@
  * <p>
  * Examples of hyperqueries in this repository:
  * <ul>
+ * <li>{@link AverageLength}</li>
  * <li>Directly follows*</li>
  * <li>{@link FractionEndInA}* (as a hyper-property)</li>
  * <li>Mean time interval*</li>
@@ -76,7 +77,6 @@
  * <p>
  * Examples of history-aware hyperproperties in this repository:
  * <ul>
- * <li>{@link AverageLength}</li>
  * <li>{@link IncreasingDuration}</li>
  * <li>{@link SameStateDirect}</li>
  * <li>{@link SuccessiveMoore}</li>
@@ -86,6 +86,7 @@
  * Examples of history-aware hyperqueries in this repository:
  * <ul>
  * <li>{@link NumberRunning}* (as "Concurrent instances")</li>
+ * <li>{@link OldestPending}</li>
  * </ul>
  */
 package examples;

@@ -111,7 +111,9 @@ public class AggregateSequence extends SliceLog
 		Object trace_id = upd.getId();
 		if (!m_slices.containsKey(trace_id))
 		{
-			m_slices.put(trace_id, new SlicePushUnit(m_sliceProcessor.duplicate()));
+			Processor slice_p = m_sliceProcessor.duplicate();
+			slice_p.setContext("id", trace_id);
+			m_slices.put(trace_id, new SlicePushUnit(slice_p));
 			ComparablePushUnit cpu = new ComparablePushUnit(trace_id, m_preorderSlice.duplicate());
 			m_orderInstances.put(trace_id, cpu);
 			m_sortedInstances.add(cpu);

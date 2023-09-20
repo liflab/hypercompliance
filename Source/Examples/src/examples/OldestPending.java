@@ -27,13 +27,17 @@ import ca.uqac.lif.cep.hypercompliance.AggregateSequence;
 import ca.uqac.lif.cep.hypercompliance.LogUpdate;
 import ca.uqac.lif.cep.hypercompliance.SliceLog.Choice;
 import ca.uqac.lif.cep.io.Print.Println;
+import ca.uqac.lif.cep.tmf.Passthrough;
 import ca.uqac.lif.cep.tmf.Prefix;
 import ca.uqac.lif.cep.util.Lists;
 import examples.MonotonicLength.Counter;
 
 /**
  * At any time point, shows the oldest <i>n</i> pending cases. An "old" case is
- * one that started a long time ago. 
+ * one that started a long time ago. Graphically, this pipeline can be
+ * represented as follows:
+ * <p>
+ * <img src="{@docRoot}/doc-files/OldestPending.png" alt="Pipeline"/>
  */
 public class OldestPending
 {
@@ -46,7 +50,7 @@ public class OldestPending
 		AggregateSequence ags = new AggregateSequence(
 				new ApplyFunction(new RaiseArity(1, new ContextVariable("id"))),
 				Choice.ACTIVE,
-				new Counter(),
+				new Passthrough(),
 				new Counter(),
 				new GroupProcessor(1, 1) {{
 					Prefix p = new Prefix(n);

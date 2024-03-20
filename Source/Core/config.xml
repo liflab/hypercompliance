@@ -25,7 +25,7 @@
   <!-- The project's name -->
   <name>BeepBeep Hypercompliance Palette</name>
 
-  <version>1.0</version>
+  <version>1.1</version>
   <package>ca/uqac/lif/cep/hypercompliance/</package>
   
   <!-- The project's author. Currently this only
@@ -70,7 +70,7 @@
         <jar>https://repo1.maven.org/maven2/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar</jar>
         <jar>https://repo1.maven.org/maven2/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar</jar>
       </files>
-      <bundle>true</bundle>
+      <bundle>false</bundle>
     </dependency>
     <dependency>
       <!-- OpenXES is required to parse XES logs -->
@@ -79,7 +79,7 @@
       <files>
         <jar>https://svn.win.tue.nl/trac/prom/export/latest/Releases/OpenXES/OpenXES-20211004.jar</jar>
       </files>
-      <bundle>true</bundle>
+      <bundle>false</bundle>
     </dependency>
     <dependency>
       <!-- JAXB is required by OpenXES -->
@@ -88,14 +88,14 @@
       <files>
         <jar>https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar</jar>
       </files>
-      <bundle>true</bundle>
+      <bundle>false</bundle>
     </dependency>
     <!-- BeepBeep is required (no joke) -->
     <dependency>
       <name>BeepBeep 3</name>
       <classname>ca.uqac.lif.cep.Processor</classname>
       <files>
-        <jar>https://github.com/liflab/beepbeep-3/releases/download/v0.10.9-alpha/beepbeep-3-0.10.9a.jar</jar>
+        <jar>https://github.com/liflab/beepbeep-3/releases/download/v0.11.1/beepbeep-3-0.11.1.jar</jar>
       </files>
       <bundle>false</bundle>
     </dependency>
@@ -104,18 +104,18 @@
       <name>BeepBeep LTL palette</name>
       <classname>ca.uqac.lif.cep.ltl.Troolean</classname>
       <files>
-        <jar>https://github.com/liflab/beepbeep-3-palettes/releases/download/v0.5.99-alpha/ltl-0.5.99-alpha.jar</jar>
+        <jar>https://github.com/liflab/beepbeep-3-palettes/releases/download/v0.7/ltl-0.7.jar</jar>
       </files>
-      <bundle>true</bundle>
+      <bundle>false</bundle>
     </dependency>
     <!-- Tuple palette -->
     <dependency>
       <name>BeepBeep Tuple palette</name>
       <classname>ca.uqac.lif.cep.tuples.Tuple</classname>
       <files>
-        <jar>https://github.com/liflab/beepbeep-3-palettes/releases/download/v0.5.99-alpha/tuples-0.5.99-alpha.jar</jar>
+        <jar>https://github.com/liflab/beepbeep-3-palettes/releases/download/v0.7/tuples-0.7.jar</jar>
       </files>
-      <bundle>true</bundle>
+      <bundle>false</bundle>
     </dependency>
   </dependencies>
 </build>

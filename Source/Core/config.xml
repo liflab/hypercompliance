@@ -77,7 +77,7 @@
       <name>OpenXES</name>
       <classname>org.deckfour.xes.in.XesXmlParser</classname>
       <files>
-        <jar>https://svn.win.tue.nl/trac/prom/export/latest/Releases/OpenXES/OpenXES-20211004.jar</jar>
+        <jar>https://github.com/promworkbench/OpenXES/raw/main/latestrelease/OpenXES.jar</jar>
       </files>
       <bundle>false</bundle>
     </dependency>

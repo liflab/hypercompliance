@@ -163,7 +163,7 @@
       Encoding="utf8"
       docencoding="utf8"
       charset="utf8"
-      windowtitle="PetitPoucet Documentation">
+      windowtitle="BeepBeep Hypercompliance Documentation">
       <doctitle><![CDATA[<h1>]]>${build.name}<![CDATA[ Documentation</h1>]]></doctitle>
       <bottom><![CDATA[<i>Copyright&nbsp;&#169; ]]>${build.author}<![CDATA[. All Rights Reserved.</i>]]></bottom>
       <link href="http://docs.oracle.com/javase/8/docs/api/"/>
@@ -179,10 +179,15 @@
         <fileset dir="Core/lib">
           <include name="**/*.jar"/>
         </fileset>
+        <fileset dir="Benchmark/dep">
+          <include name="**/*.jar"/>
+        </fileset>
       </classpath>
-      <group title="Core" packages="ca.uqac.lif.dag:ca.uqac.lif.petitpoucet:ca.uqac.lif.util"/>
-      <group title="Function Circuits" packages="ca.uqac.lif.petitpoucet.function:ca.uqac.lif.petitpoucet.function.*"/>
+      <!--
+      <group title="Core" packages="ca.uqac.lif.cep.hypercompliance:ca.uqac.lif.cep.hypercompliance.*"/>
+      <group title="Benchmark" packages="hypercompliancelab:hypercompliancelab.*"/>
       <group title="Examples" packages="examples:examples.*"/>
+      -->
     </javadoc>
     <copy todir="../docs/javadoc/doc-files">
       <fileset dir="Examples/src/doc-files"/>

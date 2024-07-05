@@ -29,7 +29,7 @@
   shows up in the footer of the Javadoc documentation. -->
   <author>Sylvain Hallé</author>
 
-  <version>1.0</version>
+  <version>1.1</version>
   <package>hypercompliancelab/</package>
   
   <!-- The project's main class -->
@@ -82,12 +82,21 @@
       </files>
       <bundle>true</bundle>
     </dependency>
+    <!-- lif-fs for file operations -->
+    <dependency>
+      <name>lif-fs</name>
+      <classname>ca.uqac.lif.fs.FileSystem</classname>
+      <files>
+        <jar>https://github.com/liflab/lif-fs/releases/download/v0.2.2/lif-fs-core-0.2.2.jar</jar>
+      </files>
+      <bundle>true</bundle>
+    </dependency>
     <!-- Synthia is required to generate logs -->
     <dependency>
       <name>Synthia (core)</name>
       <classname>ca.uqac.lif.synthia.Picker</classname>
       <files>
-        <jar>https://github.com/liflab/synthia/releases/download/v0.3.2/synthia-core-0.3.2.jar</jar>
+        <jar>https://github.com/liflab/synthia/releases/download/v0.3.3/synthia-core-0.3.3.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -96,7 +105,7 @@
       <name>BeepBeep 3</name>
       <classname>ca.uqac.lif.cep.Processor</classname>
       <files>
-        <jar>https://github.com/liflab/beepbeep-3/releases/download/v0.10.9-alpha/beepbeep-3-0.10.9a.jar</jar>
+        <jar>https://github.com/liflab/beepbeep-3/releases/download/v0.11.2/beepbeep-3-0.11.2.jar</jar>
       </files>
       <bundle>true</bundle>
     </dependency>
@@ -231,12 +240,6 @@
       </files>
       <bundle>true</bundle>
     </dependency>
-
-
-
-
-
-
   </dependencies>
 
 

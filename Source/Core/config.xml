@@ -95,7 +95,7 @@
       <name>BeepBeep 3</name>
       <classname>ca.uqac.lif.cep.Processor</classname>
       <files>
-        <jar>https://github.com/liflab/beepbeep-3/releases/download/v0.11.1/beepbeep-3-0.11.1.jar</jar>
+        <jar>https://github.com/liflab/beepbeep-3/releases/download/v0.11.2/beepbeep-3-0.11.2.jar</jar>
       </files>
       <bundle>false</bundle>
     </dependency>
@@ -104,7 +104,7 @@
       <name>BeepBeep LTL palette</name>
       <classname>ca.uqac.lif.cep.ltl.Troolean</classname>
       <files>
-        <jar>https://github.com/liflab/beepbeep-3-palettes/releases/download/v0.7/ltl-0.7.jar</jar>
+        <jar>https://github.com/liflab/beepbeep-3-palettes/releases/download/v0.8/ltl-0.8.jar</jar>
       </files>
       <bundle>false</bundle>
     </dependency>
@@ -113,7 +113,7 @@
       <name>BeepBeep Tuple palette</name>
       <classname>ca.uqac.lif.cep.tuples.Tuple</classname>
       <files>
-        <jar>https://github.com/liflab/beepbeep-3-palettes/releases/download/v0.7/tuples-0.7.jar</jar>
+        <jar>https://github.com/liflab/beepbeep-3-palettes/releases/download/v0.8/tuples-0.8.jar</jar>
       </files>
       <bundle>false</bundle>
     </dependency>

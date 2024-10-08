@@ -21,7 +21,8 @@ import static ca.uqac.lif.cep.Connector.connect;
 
 public class Test {
 
-    public static void runScenario(List<String> scenarios) throws FileSystemException, IOException{
+    @SuppressWarnings("deprecation")
+		public static void runScenario(List<String> scenarios) throws FileSystemException, IOException{
         for (String scenario : scenarios) {
             System.out.println("Checking property: " + scenario);
 

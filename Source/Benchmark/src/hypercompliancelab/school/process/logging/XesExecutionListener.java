@@ -77,12 +77,12 @@ public class XesExecutionListener implements ExecutionListener {
     }
 
 
-    private boolean isNewInstance(DelegateExecution execution) {
+    protected boolean isNewInstance(DelegateExecution execution) {
         // Check if the current execution is a start event
         return "start".equals(execution.getEventName()) && execution.getCurrentActivityId().equals("startEvent");
     }
 
-    private boolean isEndEvent(DelegateExecution execution) {
+    protected boolean isEndEvent(DelegateExecution execution) {
         // Check if the current execution is an end event
         return "end".equals(execution.getEventName());
     }

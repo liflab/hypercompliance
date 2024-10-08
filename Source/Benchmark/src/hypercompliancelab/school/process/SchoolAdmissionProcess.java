@@ -23,8 +23,6 @@ import hypercompliancelab.school.process.logging.XesLogger;
 import hypercompliancelab.school.process.pickers.Pickers;
 import org.activiti.engine.*;
 import org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration;
-import org.activiti.engine.repository.Deployment;
-import org.activiti.engine.runtime.ProcessInstance;
 import ca.uqac.lif.fs.FileSystemException;
 import ca.uqac.lif.fs.HardDisk;
 
@@ -58,10 +56,9 @@ public class SchoolAdmissionProcess {
 
 		RepositoryService repositoryService = processEngine.getRepositoryService();
 		RuntimeService runtimeService = processEngine.getRuntimeService();
-		TaskService taskService = processEngine.getTaskService();
+		processEngine.getTaskService();
 
-		// Deploy the process definition
-		Deployment deployment = repositoryService.createDeployment().addClasspathResource("school_admission.bpmn20.xml").deploy();
+		repositoryService.createDeployment().addClasspathResource("school_admission.bpmn20.xml").deploy();
 
 		for (int i = 0; i < instances; i++) {
 			Map<String, Object> variables = new HashMap<>();
@@ -77,8 +74,7 @@ public class SchoolAdmissionProcess {
 
 			variables.put("employee", "");
 
-			// Start a new process instance
-			ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("school_Admission", variables);
+			runtimeService.startProcessInstanceByKey("school_Admission", variables);
 		}
 
 		try {

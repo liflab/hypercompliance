@@ -63,7 +63,8 @@ public class Pickers {
     }
 
 
-    public static ProcessProgressCondition getProgressCondtion() {
+    @SuppressWarnings("deprecation")
+		public static ProcessProgressCondition getProgressCondtion() {
         return new ProcessProgressCondition(processProgressPicker.pick(0, 20));
     }
 
@@ -71,7 +72,6 @@ public class Pickers {
 
     public static boolean getAcceptanceDecision(Object employee, Object applicant) {
 
-        Employee e = (Employee) employee;
         Applicant a = (Applicant) applicant;
         double gpa = a.getGPA();
 
@@ -86,7 +86,7 @@ public class Pickers {
 
     public static Instant getInterviewDate() {
         LocalDate today = LocalDate.now();
-        LocalDate tomorrow = today.plusDays(new RandomInteger().pick());
+        today.plusDays(new RandomInteger().pick());
         return Instant.now();
     }
 
